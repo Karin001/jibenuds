@@ -12,7 +12,13 @@ C_SRCS_QUOTED += \
 "../Sources/SCI.c" \
 "../Sources/isr.c" \
 "../Sources/main.c" \
+"../Sources/network_layer.c" \
+"../Sources/obd_dtc.c" \
 "../Sources/txdebug.c" \
+"../Sources/uds_service.c" \
+"../Sources/uds_status.c" \
+"../Sources/uds_support.c" \
+"../Sources/uds_util.c" \
 
 C_SRCS += \
 ../Sources/CAN.c \
@@ -21,7 +27,13 @@ C_SRCS += \
 ../Sources/SCI.c \
 ../Sources/isr.c \
 ../Sources/main.c \
+../Sources/network_layer.c \
+../Sources/obd_dtc.c \
 ../Sources/txdebug.c \
+../Sources/uds_service.c \
+../Sources/uds_status.c \
+../Sources/uds_support.c \
+../Sources/uds_util.c \
 
 OBJS += \
 ./Sources/CAN_c.obj \
@@ -30,7 +42,13 @@ OBJS += \
 ./Sources/SCI_c.obj \
 ./Sources/isr_c.obj \
 ./Sources/main_c.obj \
+./Sources/network_layer_c.obj \
+./Sources/obd_dtc_c.obj \
 ./Sources/txdebug_c.obj \
+./Sources/uds_service_c.obj \
+./Sources/uds_status_c.obj \
+./Sources/uds_support_c.obj \
+./Sources/uds_util_c.obj \
 
 OBJS_QUOTED += \
 "./Sources/CAN_c.obj" \
@@ -39,7 +57,13 @@ OBJS_QUOTED += \
 "./Sources/SCI_c.obj" \
 "./Sources/isr_c.obj" \
 "./Sources/main_c.obj" \
+"./Sources/network_layer_c.obj" \
+"./Sources/obd_dtc_c.obj" \
 "./Sources/txdebug_c.obj" \
+"./Sources/uds_service_c.obj" \
+"./Sources/uds_status_c.obj" \
+"./Sources/uds_support_c.obj" \
+"./Sources/uds_util_c.obj" \
 
 C_DEPS += \
 ./Sources/CAN_c.d \
@@ -48,7 +72,13 @@ C_DEPS += \
 ./Sources/SCI_c.d \
 ./Sources/isr_c.d \
 ./Sources/main_c.d \
+./Sources/network_layer_c.d \
+./Sources/obd_dtc_c.d \
 ./Sources/txdebug_c.d \
+./Sources/uds_service_c.d \
+./Sources/uds_status_c.d \
+./Sources/uds_support_c.d \
+./Sources/uds_util_c.d \
 
 C_DEPS_QUOTED += \
 "./Sources/CAN_c.d" \
@@ -57,7 +87,13 @@ C_DEPS_QUOTED += \
 "./Sources/SCI_c.d" \
 "./Sources/isr_c.d" \
 "./Sources/main_c.d" \
+"./Sources/network_layer_c.d" \
+"./Sources/obd_dtc_c.d" \
 "./Sources/txdebug_c.d" \
+"./Sources/uds_service_c.d" \
+"./Sources/uds_status_c.d" \
+"./Sources/uds_support_c.d" \
+"./Sources/uds_util_c.d" \
 
 OBJS_OS_FORMAT += \
 ./Sources/CAN_c.obj \
@@ -66,7 +102,13 @@ OBJS_OS_FORMAT += \
 ./Sources/SCI_c.obj \
 ./Sources/isr_c.obj \
 ./Sources/main_c.obj \
+./Sources/network_layer_c.obj \
+./Sources/obd_dtc_c.obj \
 ./Sources/txdebug_c.obj \
+./Sources/uds_service_c.obj \
+./Sources/uds_status_c.obj \
+./Sources/uds_support_c.obj \
+./Sources/uds_util_c.obj \
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -123,11 +165,59 @@ Sources/main_c.obj: ../Sources/main.c
 	@echo 'Finished building: $<'
 	@echo ' '
 
-Sources/txdebug_c.obj: ../Sources/txdebug.c
+Sources/network_layer_c.obj: ../Sources/network_layer.c
 	@echo 'Building file: $<'
 	@echo 'Executing target #7 $<'
 	@echo 'Invoking: HCS08 Compiler'
+	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/network_layer.args" -ObjN="Sources/network_layer_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
+	@echo 'Finished building: $<'
+	@echo ' '
+
+Sources/obd_dtc_c.obj: ../Sources/obd_dtc.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #8 $<'
+	@echo 'Invoking: HCS08 Compiler'
+	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/obd_dtc.args" -ObjN="Sources/obd_dtc_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
+	@echo 'Finished building: $<'
+	@echo ' '
+
+Sources/txdebug_c.obj: ../Sources/txdebug.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #9 $<'
+	@echo 'Invoking: HCS08 Compiler'
 	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/txdebug.args" -ObjN="Sources/txdebug_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
+	@echo 'Finished building: $<'
+	@echo ' '
+
+Sources/uds_service_c.obj: ../Sources/uds_service.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #10 $<'
+	@echo 'Invoking: HCS08 Compiler'
+	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/uds_service.args" -ObjN="Sources/uds_service_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
+	@echo 'Finished building: $<'
+	@echo ' '
+
+Sources/uds_status_c.obj: ../Sources/uds_status.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #11 $<'
+	@echo 'Invoking: HCS08 Compiler'
+	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/uds_status.args" -ObjN="Sources/uds_status_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
+	@echo 'Finished building: $<'
+	@echo ' '
+
+Sources/uds_support_c.obj: ../Sources/uds_support.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #12 $<'
+	@echo 'Invoking: HCS08 Compiler'
+	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/uds_support.args" -ObjN="Sources/uds_support_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
+	@echo 'Finished building: $<'
+	@echo ' '
+
+Sources/uds_util_c.obj: ../Sources/uds_util.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #13 $<'
+	@echo 'Invoking: HCS08 Compiler'
+	"$(HC08ToolsEnv)/chc08" -ArgFile"Sources/uds_util.args" -ObjN="Sources/uds_util_c.obj" "$<" -Lm="$(@:%.obj=%.d)" -LmCfg=xilmou
 	@echo 'Finished building: $<'
 	@echo ' '
 

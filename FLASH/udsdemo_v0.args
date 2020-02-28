@@ -10,7 +10,13 @@
 "$(ProjDirPath)/FLASH/Sources/SCI_c.obj"
 "$(ProjDirPath)/FLASH/Sources/isr_c.obj"
 "$(ProjDirPath)/FLASH/Sources/main_c.obj"
+"$(ProjDirPath)/FLASH/Sources/network_layer_c.obj"
+"$(ProjDirPath)/FLASH/Sources/obd_dtc_c.obj"
 "$(ProjDirPath)/FLASH/Sources/txdebug_c.obj"
+"$(ProjDirPath)/FLASH/Sources/uds_service_c.obj"
+"$(ProjDirPath)/FLASH/Sources/uds_status_c.obj"
+"$(ProjDirPath)/FLASH/Sources/uds_support_c.obj"
+"$(ProjDirPath)/FLASH/Sources/uds_util_c.obj"
 "$(ProjDirPath)/FLASH/Project_Settings/Startup_Code/start08_c.obj"
 "$(ProjDirPath)/FLASH/Lib/mc9s08dz60_c.obj"
 "$(MCUToolsBaseDirEnv)/lib/hc08c/lib/ansiis.lib" )

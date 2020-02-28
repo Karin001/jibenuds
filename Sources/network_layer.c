@@ -21,37 +21,37 @@ static network_layer_st nwl_st = NWL_IDLE;
 static bool_t g_wait_cf = FALSE;
 static bool_t g_wait_fc = FALSE;
 
-static uint32_t nt_timer[TIMER_CNT] = {0};
+static uint32 nt_timer[TIMER_CNT] = {0};
 
-static uint8_t g_rfc_stmin = 0;    /* received flowcontrol SeparationTime */
-static uint8_t g_rfc_bs = 0;       /* received flowcontrol block size */
+static uint8 g_rfc_stmin = 0;    /* received flowcontrol SeparationTime */
+static uint8 g_rfc_bs = 0;       /* received flowcontrol block size */
 
-static uint8_t g_xcf_bc = 0;       /* transmit consecutive frame block counter */
-static uint8_t g_xcf_sn = 0;       /* transmit consecutive frame SequenceNumber */
-static uint8_t g_rcf_bc = 0;       /* received frame block counter */
-static uint8_t g_rcf_sn = 0;       /* received consecutive frame SequenceNumber */
+static uint8 g_xcf_bc = 0;       /* transmit consecutive frame block counter */
+static uint8 g_xcf_sn = 0;       /* transmit consecutive frame SequenceNumber */
+static uint8 g_rcf_bc = 0;       /* received frame block counter */
+static uint8 g_rcf_sn = 0;       /* received consecutive frame SequenceNumber */
 
 /* transmit buffer */
-static uint8_t remain_buf[UDS_FF_DL_MAX];
-static uint16_t remain_len = 0;
-static uint16_t remain_pos = 0;
+static uint8 remain_buf[UDS_FF_DL_MAX];
+static uint16 remain_len = 0;
+static uint16 remain_pos = 0;
 
 /* recieve buffer */
-static uint8_t recv_buf[UDS_FF_DL_MAX];
-static uint16_t recv_len = 0;
-static uint16_t recv_fdl = 0;  /* frame data len */
+static uint8 recv_buf[UDS_FF_DL_MAX];
+static uint16 recv_len = 0;
+static uint16 recv_fdl = 0;  /* frame data len */
 
 
-OS_EVENT *UdsMutex;
+//OS_EVENT *UdsMutex;
 /*******************************************************************************
     external Varaibles
 *******************************************************************************/
-uint8_t g_tatype;
+uint8 g_tatype;
 /*******************************************************************************
     Function  declaration
 *******************************************************************************/
 static void
-send_flowcontrol (uint8_t flow_st);
+send_flowcontrol (uint8 flow_st);
 
 //static indication_func uds_indication = NULL;
 //static confirm_func uds_confirm = NULL;
@@ -70,7 +70,7 @@ static nt_usdata_t N_USData = {NULL, NULL, NULL};
  *     void
  */
 static void
-nt_timer_start (uint8_t num)
+nt_timer_start (uint8 num)
 {
 	if (num >= TIMER_CNT) return;
 
@@ -83,7 +83,7 @@ nt_timer_start (uint8_t num)
 }
 
 static void
-nt_timer_start_wv (uint8_t num, uint32_t value)
+nt_timer_start_wv (uint8 num, uint32 value)
 {
 	if (num >= TIMER_CNT) return;
 
@@ -96,7 +96,7 @@ nt_timer_start_wv (uint8_t num, uint32_t value)
 }
 
 static void
-nt_timer_stop (uint8_t num)
+nt_timer_stop (uint8 num)
 {
 	if (num >= TIMER_CNT) return;
 
@@ -112,7 +112,7 @@ nt_timer_stop (uint8_t num)
  *     0 - timer is not running, 1 - timer is running, -1 - a timeout occur
  */
 static int
-nt_timer_run (uint8_t num)
+nt_timer_run (uint8 num)
 {
 	if (num >= TIMER_CNT) return 0;
 
@@ -143,7 +143,7 @@ nt_timer_run (uint8_t num)
  *     0 - timer is not running, 1 - timer is running,
  */
 static int
-nt_timer_chk (uint8_t num)
+nt_timer_chk (uint8 num)
 {
 	if (num >= TIMER_CNT) return 0;
 
@@ -171,7 +171,7 @@ nt_timer_chk (uint8_t num)
 static void
 clear_network (void)
 {
-    uint8_t num;
+    uint8 num;
     nwl_st = NWL_IDLE;
     g_wait_cf = FALSE;
     g_wait_fc = FALSE;
@@ -197,10 +197,10 @@ clear_network (void)
  *     void
  */
 static void
-recv_singleframe (uint8_t frame_buf[], uint8_t frame_dlc)
+recv_singleframe (uint8 frame_buf[], uint8 frame_dlc)
 {
-    uint16_t i, uds_dlc;
-	uint8_t service_id;
+    uint16 i, uds_dlc;
+	uint8 service_id;
 
     uds_dlc = NT_GET_SF_DL (frame_buf[0]);
 
@@ -234,13 +234,13 @@ recv_singleframe (uint8_t frame_buf[], uint8_t frame_dlc)
  *     0 - recv a right frame, other - err 
  */
 static int
-recv_firstframe (uint8_t frame_buf[], uint8_t frame_dlc)
+recv_firstframe (uint8 frame_buf[], uint8 frame_dlc)
 {
-    uint16_t i;
-    uint8_t service_id;
-    uint16_t uds_dlc;
+    uint16 i;
+    uint8 service_id;
+    uint16 uds_dlc;
 
-    uds_dlc = ((uint16_t)(frame_buf[0]&0x0f)) << 8;
+    uds_dlc = ((uint16)(frame_buf[0]&0x0f)) << 8;
     uds_dlc |= frame_buf[1];
 
     service_id = frame_buf[2];
@@ -296,10 +296,10 @@ recv_firstframe (uint8_t frame_buf[], uint8_t frame_dlc)
  *     0 - recv end, 1 - recv continue, other - err
  */
 static int
-recv_consecutiveframe (uint8_t frame_buf[], uint8_t frame_dlc)
+recv_consecutiveframe (uint8 frame_buf[], uint8 frame_dlc)
 {
-    uint8_t cf_sn;
-	uint16_t i;
+    uint8 cf_sn;
+	uint16 i;
     cf_sn = NT_GET_CF_SN (frame_buf[0]);
 
     /* if N_Cr timeout, Abort message transmission and issue N_TIMEOUT_Cr */
@@ -358,9 +358,9 @@ recv_consecutiveframe (uint8_t frame_buf[], uint8_t frame_dlc)
  *     0 - recv CTS, 1 - recv WT, other - err
  */
 static int
-recv_flowcontrolframe (uint8_t frame_buf[], uint8_t frame_dlc)
+recv_flowcontrolframe (uint8 frame_buf[], uint8 frame_dlc)
 {
-    uint8_t fc_fs;
+    uint8 fc_fs;
 
     fc_fs = NT_GET_FC_FS (frame_buf[0]);
 
@@ -425,15 +425,16 @@ recv_flowcontrolframe (uint8_t frame_buf[], uint8_t frame_dlc)
  *     void
  */
 static void
-send_flowcontrol (uint8_t flow_st)
+send_flowcontrol (uint8 flow_st)
 {
-    uint8_t send_buf[UDS_VALID_FRAME_LEN] = {0};
+    uint8 send_buf[UDS_VALID_FRAME_LEN] = {0};
     send_buf[0] = NT_SET_PCI_TYPE_FC (flow_st);
     send_buf[1] = NT_XMIT_FC_BS;
     send_buf[2] = NT_XMIT_FC_STMIN;
     ZTai_UDS_Send (send_buf, UDS_VALID_FRAME_LEN);
 
 }
+
 
 /**
  * send_singleframe - send a single frame msg
@@ -445,14 +446,14 @@ send_flowcontrol (uint8_t flow_st)
  *     void
  */
 static void
-send_singleframe (uint8_t msg_buf[], uint16_t msg_dlc)
+send_singleframe (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint16_t i;
-    uint8_t send_buf[UDS_VALID_FRAME_LEN] = {0};
+	uint16 i;
+    uint8 send_buf[UDS_VALID_FRAME_LEN] = {0};
 
 	if (msg_dlc == 0 || msg_dlc > UDS_SF_DL_MAX) return;
 
-    send_buf[0] = NT_SET_PCI_TYPE_SF ((uint8_t)msg_dlc);
+    send_buf[0] = NT_SET_PCI_TYPE_SF ((uint8)msg_dlc);
 	for (i = 0; i < msg_dlc; i++)
         send_buf[1+i] = msg_buf[i];
 
@@ -472,15 +473,15 @@ send_singleframe (uint8_t msg_buf[], uint16_t msg_dlc)
  *     int
  */
 static int
-send_firstframe (uint8_t msg_buf[], uint16_t msg_dlc)
+send_firstframe (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint16_t i;
-    uint8_t send_buf[UDS_VALID_FRAME_LEN] = {0};
+	uint16 i;
+    uint8 send_buf[UDS_VALID_FRAME_LEN] = {0};
 
 	if (msg_dlc < UDS_FF_DL_MIN || msg_dlc > UDS_FF_DL_MAX) return 0;
 
-    send_buf[0] = NT_SET_PCI_TYPE_FF ((uint8_t)(msg_dlc >> 8));
-	send_buf[1] = (uint8_t)(msg_dlc & 0x00ff);
+    send_buf[0] = NT_SET_PCI_TYPE_FF ((uint8)(msg_dlc >> 8));
+	send_buf[1] = (uint8)(msg_dlc & 0x00ff);
 	for (i = 0; i < UDS_VALID_FRAME_LEN-2; i++)
         send_buf[2+i] = msg_buf[i];
 
@@ -507,10 +508,10 @@ send_firstframe (uint8_t msg_buf[], uint16_t msg_dlc)
  *     int
  */
 static int
-send_consecutiveframe (uint8_t msg_buf[], uint16_t msg_dlc, uint8_t frame_sn)
+send_consecutiveframe (uint8 msg_buf[], uint16 msg_dlc, uint8 frame_sn)
 {
-	uint16_t i;
-    uint8_t send_buf[UDS_VALID_FRAME_LEN] = {0};
+	uint16 i;
+    uint8 send_buf[UDS_VALID_FRAME_LEN] = {0};
 
     send_buf[0] = NT_SET_PCI_TYPE_CF (frame_sn);
 	for (i = 0; i < msg_dlc && i < UDS_CF_DL_COM; i++)
@@ -535,10 +536,10 @@ send_consecutiveframe (uint8_t msg_buf[], uint16_t msg_dlc, uint8_t frame_sn)
  *     void
  */
 static void
-send_multipleframe (uint8_t msg_buf[], uint16_t msg_dlc)
+send_multipleframe (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint16_t i;
-	uint8_t send_len;
+	uint16 i;
+	uint8 send_len;
 
 	if (msg_dlc < UDS_FF_DL_MIN || msg_dlc > UDS_FF_DL_MAX) return;
 
@@ -566,8 +567,8 @@ send_multipleframe (uint8_t msg_buf[], uint16_t msg_dlc)
 extern void
 network_main (void)
 {
-    uint8_t send_len;
-    uint8_t err;
+    uint8 send_len;
+    uint8 err;
     if (nt_timer_run (TIMER_N_CR) < 0)
     {
         clear_network ();
@@ -630,10 +631,10 @@ network_main (void)
  *     void
  */
 extern void
-network_recv_frame (uint8_t func_addr, uint8_t frame_buf[], uint8_t frame_dlc)
+network_recv_frame (uint8 func_addr, uint8 frame_buf[], uint8 frame_dlc)
 {
-    uint8_t err;
-    uint8_t pci_type; /* protocol control information type */
+    uint8 err;
+    uint8 pci_type; /* protocol control information type */
 
 
     /**
@@ -708,7 +709,7 @@ network_recv_frame (uint8_t func_addr, uint8_t frame_buf[], uint8_t frame_dlc)
  *     void
  */
 extern void
-network_send_udsmsg (uint8_t msg_buf[], uint16_t msg_dlc)
+network_send_udsmsg (uint8 msg_buf[], uint16 msg_dlc)
 {
 
 	if (msg_dlc == 0 || msg_dlc > UDS_FF_DL_MAX) return;
@@ -735,7 +736,7 @@ network_send_udsmsg (uint8_t msg_buf[], uint16_t msg_dlc)
 extern int
 network_reg_usdata (nt_usdata_t usdata)
 {
-    uint8_t err;
+    uint8 err;
     if (usdata.ffindication == NULL || usdata.indication == NULL || usdata.confirm == NULL) return -1;
 
     N_USData = usdata;

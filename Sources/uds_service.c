@@ -21,9 +21,9 @@
 *******************************************************************************/
 typedef struct __UDS_SERVICE_T__
 {
-    uint8_t uds_sid;
-    uint8_t uds_min_len;
-    void (* uds_service)  (uint8_t *, uint16_t);
+    uint8 uds_sid;
+    uint8 uds_min_len;
+    void (* uds_service)  (uint8 *, uint16);
     bool_t std_spt;   /* default session support */
     bool_t ext_spt;   /* extended session support */
     bool_t fun_spt;   /* function address support */
@@ -35,44 +35,44 @@ typedef struct __UDS_SERVICE_T__
     Function  declaration
 *******************************************************************************/
 static void
-uds_service_10 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_10 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_11 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_11 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_27 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_27 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_28 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_28 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_3E (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_3E (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_85 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_85 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_22 (uint8_t msg_buf[], uint16_t msg_dlc); 
+uds_service_22 (uint8 msg_buf[], uint16 msg_dlc); 
 static void
-uds_service_2E (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_2E (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_14 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_14 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_19 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_19 (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_2F (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_2F (uint8 msg_buf[], uint16 msg_dlc);
 static void
-uds_service_31 (uint8_t msg_buf[], uint16_t msg_dlc);
+uds_service_31 (uint8 msg_buf[], uint16 msg_dlc);
 
 /*******************************************************************************
     Private Varaibles
 *******************************************************************************/
-uint8_t uds_session = UDS_SESSION_NONE;
-static uint8_t org_seed_buf[UDS_SEED_LENGTH];
-static uint8_t req_seed = 0;
+uint8 uds_session = UDS_SESSION_NONE;
+static uint8 org_seed_buf[UDS_SEED_LENGTH];
+static uint8 req_seed = 0;
 
 /* current security access status */
 static uds_sa_lv curr_sa = UDS_SA_NON;
 
 /* uds user layer timer */
-static uint32_t uds_timer[UDS_TIMER_CNT] = {0};
+static uint32 uds_timer[UDS_TIMER_CNT] = {0};
 
-static uint8_t uds_fsa_cnt = 0;
+static uint8 uds_fsa_cnt = 0;
 
 static bool_t ssp_flg;
 
@@ -111,7 +111,7 @@ bool_t dis_normal_recv;
  *     void
  */
 static void
-uds_timer_start (uint8_t num)
+uds_timer_start (uint8 num)
 {
 	if (num >= UDS_TIMER_CNT) return;
 
@@ -123,7 +123,7 @@ uds_timer_start (uint8_t num)
 
 
 static void
-uds_timer_stop (uint8_t num)
+uds_timer_stop (uint8 num)
 {
 	if (num >= UDS_TIMER_CNT) return;
 
@@ -139,7 +139,7 @@ uds_timer_stop (uint8_t num)
  *     0 - timer is not running, 1 - timer is running, -1 - a timeout occur
  */
 static int
-uds_timer_run (uint8_t num)
+uds_timer_run (uint8 num)
 {
 	if (num >= UDS_TIMER_CNT) return 0;
 
@@ -170,7 +170,7 @@ uds_timer_run (uint8_t num)
  *     0 - timer is not running, 1 - timer is running,
  */
 static int
-uds_timer_chk (uint8_t num)
+uds_timer_chk (uint8 num)
 {
 	if (num >= UDS_TIMER_CNT) return 0;
 
@@ -203,9 +203,9 @@ uds_no_response (void)
  *     0 - ok, other - wrong
  */
 static void
-uds_negative_rsp (uint8_t sid, uint8_t rsp_nrc)
+uds_negative_rsp (uint8 sid, uint8 rsp_nrc)
 {
-	uint8_t temp_buf[8] = {0};
+	uint8 temp_buf[8] = {0};
 
     if (rsp_nrc != NRC_SERVICE_BUSY)
         uds_timer_start (UDS_TIMER_S3server);
@@ -234,7 +234,7 @@ uds_negative_rsp (uint8_t sid, uint8_t rsp_nrc)
  *     0 - ok, other - wrong
  */
 static void
-uds_positive_rsp (uint8_t data[], uint16_t len)
+uds_positive_rsp (uint8 data[], uint16 len)
 {
 	uds_timer_start (UDS_TIMER_S3server);
 	/* SuppressPosRspMsg is true */
@@ -245,7 +245,7 @@ uds_positive_rsp (uint8_t data[], uint16_t len)
 
 
 
-static int16_t
+static int16
 eeprom_write (void)         // we should write the rwdata_list which in eeprom to flash
 {
 	return 0;
@@ -261,11 +261,11 @@ eeprom_write (void)         // we should write the rwdata_list which in eeprom t
  *     bool
  */
 static bool_t
-uds_check_len (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_check_len (uint8 msg_buf[], uint16 msg_dlc)
 {
 	bool_t result;
-	uint8_t subfunction;
-	uint8_t sid;
+	uint8 subfunction;
+	uint8 sid;
 	sid = msg_buf[0];
 
 	if (msg_dlc < 2)
@@ -400,19 +400,19 @@ uds_check_len (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_10 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_10 (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t rsp_buf[8];
+    uint8 subfunction;
+	uint8 rsp_buf[8];
 
 	subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
 
 	rsp_buf[0] = USD_GET_POSITIVE_RSP(SID_10);
 	rsp_buf[1] = subfunction;
-	rsp_buf[2] = (uint8_t)(P2_SERVER >> 8);
-	rsp_buf[3] = (uint8_t)(P2_SERVER & 0x00ff);
-	rsp_buf[4] = (uint8_t)(P2X_SERVER >> 8);
-	rsp_buf[5] = (uint8_t)(P2X_SERVER & 0x00ff);
+	rsp_buf[2] = (uint8)(P2_SERVER >> 8);
+	rsp_buf[3] = (uint8)(P2_SERVER & 0x00ff);
+	rsp_buf[4] = (uint8)(P2X_SERVER >> 8);
+	rsp_buf[5] = (uint8)(P2X_SERVER & 0x00ff);
 	switch (subfunction)
 	{
 		case UDS_SESSION_STD:
@@ -447,10 +447,10 @@ uds_service_10 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_11 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_11 (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t rsp_buf[8];
+    uint8 subfunction;
+	uint8 rsp_buf[8];
 
 	subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
 	if (subfunction == UDS_RESET_HARD)
@@ -481,11 +481,11 @@ uds_service_11 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_27 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_27 (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t rsp_buf[8];
-	uint16_t i;
+    uint8 subfunction;
+	uint8 rsp_buf[8];
+	uint16 i;
 
 	subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
 
@@ -557,11 +557,11 @@ uds_service_27 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_28 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_28 (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t rsp_buf[8];
-	uint8_t cc_type;
+    uint8 subfunction;
+	uint8 rsp_buf[8];
+	uint8 cc_type;
 
 	subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
 	cc_type = msg_buf[2];
@@ -615,11 +615,11 @@ uds_service_28 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_3E (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_3E (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t subfun_indication_bit; 
-	uint8_t rsp_buf[8];
+    uint8 subfunction;
+	uint8 subfun_indication_bit; 
+	uint8 rsp_buf[8];
 
    /**
 	* Any TesterPresent (3E hex) request message that is received 
@@ -657,10 +657,10 @@ uds_service_3E (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_85 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_85 (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t rsp_buf[8];
+    uint8 subfunction;
+	uint8 rsp_buf[8];
 	subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
 
 	switch (subfunction)
@@ -695,19 +695,19 @@ uds_service_85 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_22 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_22 (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint8_t rsp_buf[UDS_RSP_LEN_MAX];
-	uint16_t did;
-	uint16_t rsp_len;
-    uint16_t msg_pos, did_n;
+	uint8 rsp_buf[UDS_RSP_LEN_MAX];
+	uint16 did;
+	uint16 rsp_len;
+    uint16 msg_pos, did_n;
 	bool_t find_did;
 
     rsp_buf[0] = USD_GET_POSITIVE_RSP(SID_22);
 	rsp_len = 1;
     for (msg_pos = 1; msg_pos < msg_dlc; msg_pos+=2)
 	{
-	    did = ((uint16_t)msg_buf[msg_pos]) << 8;
+	    did = ((uint16)msg_buf[msg_pos]) << 8;
 	    did |= msg_buf[msg_pos+1];
         
 		find_did = FALSE;
@@ -745,16 +745,16 @@ uds_service_22 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_2E (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_2E (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint8_t rsp_buf[8];
-	uint16_t did;
-    uint16_t did_n;
-	int16_t write_len;
+	uint8 rsp_buf[8];
+	uint16 did;
+    uint16 did_n;
+	int16 write_len;
 	bool_t find_did;
 	bool_t vali_dlc;
 
-	did = ((uint16_t)msg_buf[1]) << 8;
+	did = ((uint16)msg_buf[1]) << 8;
 	did |= msg_buf[2];
 	
 	find_did = FALSE;
@@ -810,14 +810,14 @@ uds_service_2E (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_14 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_14 (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint8_t rsp_buf[8];
-	uint32_t dtc_group;
+	uint8 rsp_buf[8];
+	uint32 dtc_group;
 	dtc_group = 0;
-	dtc_group |= ((uint32_t)msg_buf[1]) << 16;
-	dtc_group |= ((uint32_t)msg_buf[2]) << 8;
-	dtc_group |= ((uint32_t)msg_buf[3]) << 0;
+	dtc_group |= ((uint32)msg_buf[1]) << 16;
+	dtc_group |= ((uint32)msg_buf[2]) << 8;
+	dtc_group |= ((uint32)msg_buf[3]) << 0;
 
 	if (dtc_group == UDS_DTC_GROUP_ALL)
 	{
@@ -844,10 +844,10 @@ uds_service_14 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_19 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_19 (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint8_t subfunction;
-    uint8_t rsp_buf[UDS_RSP_LEN_MAX];
+	uint8 subfunction;
+    uint8 rsp_buf[UDS_RSP_LEN_MAX];
 
 	subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
 
@@ -855,8 +855,8 @@ uds_service_19 (uint8_t msg_buf[], uint16_t msg_dlc)
 	{
 		case REPORT_DTC_NUMBER_BY_STATUS_MASK:
 		{
-			uint8_t dtc_status_mask;
-			uint16_t dtc_count;
+			uint8 dtc_status_mask;
+			uint16 dtc_count;
 			dtc_status_mask = msg_buf[2];
 			dtc_count = get_dtc_number_by_status_mask (dtc_status_mask);
 			rsp_buf[0] = USD_GET_POSITIVE_RSP(SID_19);
@@ -869,8 +869,8 @@ uds_service_19 (uint8_t msg_buf[], uint16_t msg_dlc)
 		}
 		case REPORT_DTC_BY_STATUS_MASK:
 		{
-			uint8_t dtc_status_mask;
-			uint16_t dtc_dlc;
+			uint8 dtc_status_mask;
+			uint16 dtc_dlc;
 			dtc_status_mask = msg_buf[2];
 			rsp_buf[0] = USD_GET_POSITIVE_RSP(SID_19);
 		    rsp_buf[1] = subfunction;
@@ -887,7 +887,7 @@ uds_service_19 (uint8_t msg_buf[], uint16_t msg_dlc)
 		    break;
 		case REPORT_SUPPORTED_DTC:
 		{
-			uint16_t dtc_dlc;
+			uint16 dtc_dlc;
 			rsp_buf[0] = USD_GET_POSITIVE_RSP(SID_19);
 		    rsp_buf[1] = subfunction;
 		    rsp_buf[2] = DTC_AVAILABILITY_STATUS_MASK;
@@ -912,16 +912,16 @@ uds_service_19 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_2F (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_2F (uint8 msg_buf[], uint16 msg_dlc)
 {
-	uint8_t rsp_buf[8];
-	uint8_t ioctrl_param;
-	uint16_t did;
-    uint16_t did_n;
+	uint8 rsp_buf[8];
+	uint8 ioctrl_param;
+	uint16 did;
+    uint16 did_n;
 	bool_t find_did;
 	bool_t vali_par;
 
-	did = ((uint16_t)msg_buf[1]) << 8;
+	did = ((uint16)msg_buf[1]) << 8;
 	did |= msg_buf[2];
 	ioctrl_param = msg_buf[3];
 
@@ -997,16 +997,16 @@ uds_service_2F (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_service_31 (uint8_t msg_buf[], uint16_t msg_dlc)
+uds_service_31 (uint8 msg_buf[], uint16 msg_dlc)
 {
-    uint8_t subfunction;
-	uint8_t rsp_buf[8];
-	uint16_t rid;
-	uint16_t rid_n;
+    uint8 subfunction;
+	uint8 rsp_buf[8];
+	uint16 rid;
+	uint16 rid_n;
 	bool_t find_rid;
 
     subfunction = UDS_GET_SUB_FUNCTION (msg_buf[1]);
-	rid = ((uint16_t)msg_buf[2]) << 8;
+	rid = ((uint16)msg_buf[2]) << 8;
 	rid |= msg_buf[3];
 
 	find_rid = FALSE;
@@ -1070,7 +1070,7 @@ uds_service_31 (uint8_t msg_buf[], uint16_t msg_dlc)
 				}
 				else
 				{
-					rsp_buf[4] = (uint8_t)rtctrl_list[rid_n].rtst;
+					rsp_buf[4] = (uint8)rtctrl_list[rid_n].rtst;
 				}
 			}
 			else
@@ -1094,7 +1094,7 @@ uds_service_31 (uint8_t msg_buf[], uint16_t msg_dlc)
  *     void
  */
 static void
-uds_dataff_indication (uint16_t msg_dlc)
+uds_dataff_indication (uint16 msg_dlc)
 {
 	uds_timer_stop (UDS_TIMER_S3server);
 }
@@ -1110,11 +1110,11 @@ uds_dataff_indication (uint16_t msg_dlc)
  */
 
 static void
-uds_data_indication (uint8_t msg_buf[], uint16_t msg_dlc, n_result_t n_result)
+uds_data_indication (uint8 msg_buf[], uint16 msg_dlc, n_result_t n_result)
 {
-	uint8_t i;
-	uint8_t sid;
-	uint8_t ssp;
+	uint8 i;
+	uint8 sid;
+	uint8 ssp;
 	bool_t find_sid;
 	bool_t session_spt;
 	uds_timer_stop (UDS_TIMER_S3server);
@@ -1210,7 +1210,7 @@ uds_data_confirm (n_result_t n_result)
  *     void
  */
 extern void
-uds_get_frame (uint8_t func_addr, uint8_t frame_buf[], uint8_t frame_dlc)
+uds_get_frame (uint8 func_addr, uint8 frame_buf[], uint8 frame_dlc)
 {
 	network_recv_frame (func_addr, frame_buf, frame_dlc);
 }

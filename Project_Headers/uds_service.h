@@ -11,7 +11,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-//#include <stdint.h>
+#include <Type.h>
 #include "network_layer.h"
 
 /*******************************************************************************
@@ -222,7 +222,7 @@ extern bool_t dis_normal_recv;
  *     void
  */
 extern void
-uds_get_frame (uint8_t func_addr, uint8_t frame_buf[], uint8_t frame_dlc);
+uds_get_frame (uint8 func_addr, uint8 frame_buf[], uint8 frame_dlc);
 
 /**
  * uds_main - uds main loop, should be schedule every 1 ms

@@ -12,6 +12,7 @@
 *******************************************************************************/
 #include <stdlib.h>
 //#include "ucos_ii.h"
+#include "Type.h"
 #include "uds_type.h"
 #include "uds_util.h"
 /*******************************************************************************
@@ -29,10 +30,10 @@
  * returns:
  *     a uint8
  */
-uint8_t
+uint8
 rand_u8 (void)
 {
-	uint32_t ticks;
+	uint32 ticks;
 //	ticks = OSTimeGet();
 	srand(ticks);
 
@@ -49,7 +50,7 @@ rand_u8 (void)
  *     0 - ok, -1 - err
  */
 int
-host_to_canl (uint8_t buf[], uint32_t val)
+host_to_canl (uint8 buf[], uint32 val)
 {
 	if (buf == NULL) return -1;
 
@@ -62,7 +63,7 @@ host_to_canl (uint8_t buf[], uint32_t val)
 }
 
 int
-host_to_cans (uint8_t buf[], uint16_t val)
+host_to_cans (uint8 buf[], uint16 val)
 {
 	if (buf == NULL) return -1;
 
@@ -83,18 +84,52 @@ host_to_cans (uint8_t buf[], uint16_t val)
  *     0 - ok, -1 - err
  */
 int
-can_to_hostl (uint8_t buf[], uint32_t *pval)
+can_to_hostl (uint8 buf[], uint32 *pval)
 {
-	uint32_t val;
+	uint32 val;
 	if (buf == NULL || pval == NULL) return -1;
 
     val = 0;
-	val |= ((uint32_t)buf[0]) << 24;
-	val |= ((uint32_t)buf[1]) << 16;
-	val |= ((uint32_t)buf[2]) << 8;
-	val |= ((uint32_t)buf[3]) << 0;
+	val |= ((uint32)buf[0]) << 24;
+	val |= ((uint32)buf[1]) << 16;
+	val |= ((uint32)buf[2]) << 8;
+	val |= ((uint32)buf[3]) << 0;
 
     *pval = val;
 	return 0;
 }
+void
+* memcpy(void* dst,const void* src,int n)
+{
+	char* pdst = (char *)dst;
+	char* psrc = (char *)src;
+    if (dst == NULL || src == NULL || n <= 0)
+    {
+        //void* 一定要有返回值 void可以没有返回值 void*和void不相同
+        return NULL;
+    }
+    
+    if (psrc < pdst && pdst < psrc + n)
+    {
+        pdst = pdst + n - 1;
+        psrc = psrc + n - 1;
+        while (n--)
+        {
+            *pdst = *psrc;
+            pdst--;
+            psrc--;
+        }
+    }
+    else
+    {
+        while (n--)
+        {
+            *pdst = *psrc;
+            pdst++;
+            psrc++;
+        }
+    }
+    return dst;
+}
+
 /****************EOF****************/

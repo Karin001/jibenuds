@@ -190,3 +190,18 @@ uint8 CANGetMsg(CANMsg *reMsgBuf)
     
     return 1;
 }
+// network_layer ½Ó¿Ú
+void ZTai_UDS_Send(uint8 sendBuf[], const int code)
+{
+	uint8 i;
+	CANMsg msg;
+	msg.IDE = 0;
+	msg.RTR = 0;
+	for(i=0;i<8;i++)
+	{
+		msg.data[i] = sendBuf[i];
+	}
+	msg.sendID = udsPhyTa;
+	msg.dataLen = 8;
+	CANSendMsg(&msg);
+}

@@ -12,7 +12,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-// #include <stdint.h>
+#include <Type.h>
 #include "uds_type.h"
 
 typedef enum _N_TATYPE_T_
@@ -35,11 +35,10 @@ typedef enum _N_RESULT_
     N_BUFFER_OVFLW,
     N_ERROR
 }n_result_t;
-
-typedef void
-(*ffindication_func) (uint16_t msg_dlc);
-typedef void
-(*indication_func) (uint8_t msg_buf[], uint16_t msg_dlc, n_result_t n_result);
+typedef void 
+(*ffindication_func) (uint16 msg_dlc);
+typedef void 
+(*indication_func) (uint8 msg_buf[], uint16 msg_dlc, n_result_t n_result);
 typedef void
 (*confirm_func) (n_result_t n_result);
 
@@ -53,7 +52,7 @@ typedef struct _NETWORK_USER_DATA_T_
 /*******************************************************************************
     external Varaibles
 *******************************************************************************/
-extern uint8_t g_tatype;
+extern uint8 g_tatype;
 
 /*******************************************************************************
     Function  Definition
@@ -82,7 +81,7 @@ network_main(void);
  *     void
  */
 extern void
-network_recv_frame(uint8_t func_addr, uint8_t frame_buf[], uint8_t frame_dlc);
+network_recv_frame(uint8 func_addr, uint8 frame_buf[], uint8 frame_dlc);
 
 /**
  * network_send_udsmsg - send a uds msg by can
@@ -94,7 +93,7 @@ network_recv_frame(uint8_t func_addr, uint8_t frame_buf[], uint8_t frame_dlc);
  *     void
  */
 extern void
-network_send_udsmsg(uint8_t msg_buf[], uint16_t msg_dlc);
+network_send_udsmsg(uint8 msg_buf[], uint16 msg_dlc);
 
 
 /**

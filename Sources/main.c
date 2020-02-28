@@ -4,6 +4,7 @@
 //-----------------------------------*
 
 #include "Includes.h"
+#include "uds_service.h"
 //在此添加全局变量定义
 CANMsg g_msgGet;                    //报文接收缓冲区
 CANMsg g_msgSend;
@@ -20,6 +21,7 @@ void main(void)
     //2 模块初始化
     MCUInit();                      //2.1 芯片初始化
     //SCIInit(1,SYSTEM_CLOCK,9600);   //2.2 UART模块初始化
+    uds_init();
     CANInit();                     //2.3 CAN模块初始化
     //IO_INIT();                      //2.4 IO模块初始化
     TIMER1_init();

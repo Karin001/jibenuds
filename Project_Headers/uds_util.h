@@ -11,7 +11,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-//#include <stdint.h>
+#include <Type.h>
 #include "uds_type.h"
 /*******************************************************************************
     Type Definition
@@ -21,16 +21,19 @@
     Function  Definition
 *******************************************************************************/
 
-uint8_t
+
+uint8
 rand_u8 (void);
 
 int
-host_to_canl (uint8_t buf[], uint32_t val);
+host_to_canl (uint8 buf[], uint32 val);
 
 int
-host_to_cans (uint8_t buf[], uint16_t val);
+host_to_cans (uint8 buf[], uint16 val);
 
 int
-can_to_hostl (uint8_t buf[], uint32_t *pval);
+can_to_hostl (uint8 buf[], uint32 *pval);
 
+void
+* memcpy(void* dst,const void* src,int n);
 #endif

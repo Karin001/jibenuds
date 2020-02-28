@@ -11,7 +11,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-//#include <stdint.h>
+#include <Type.h>
 #include "uds_type.h"
 
 /*******************************************************************************
@@ -39,7 +39,7 @@
  * returns:
  *     0 - success锛�-1 - fail
  */
-int uds_security_access (uint8_t key_buf[], uint8_t seed_buf[]);
+int uds_security_access (uint8 key_buf[], uint8 seed_buf[]);
 
 #endif
 /****************EOF****************/

@@ -17,9 +17,16 @@ MCUInit_c.obj                           Model: SMALL,         Lang: ANSI-C
 SCI_c.obj                               Model: SMALL,         Lang: ANSI-C
 isr_c.obj                               Model: SMALL,         Lang: ANSI-C
 main_c.obj                              Model: SMALL,         Lang: ANSI-C
+network_layer_c.obj                     Model: SMALL,         Lang: ANSI-C
+obd_dtc_c.obj                           Model: SMALL,         Lang: ANSI-C
+uds_service_c.obj                       Model: SMALL,         Lang: ANSI-C
+uds_status_c.obj                        Model: SMALL,         Lang: ANSI-C
+uds_support_c.obj                       Model: SMALL,         Lang: ANSI-C
+uds_util_c.obj                          Model: SMALL,         Lang: ANSI-C
 start08_c.obj                           Model: SMALL,         Lang: ANSI-C
 mc9s08dz60_c.obj                        Model: SMALL,         Lang: ANSI-C
 rtshc08.o (ansiis.lib)                  Model: SMALL,         Lang: ANSI-C
+stdlib.o (ansiis.lib)                   Model: SMALL,         Lang: ANSI-C
 
 *********************************************************************************************
 STARTUP SECTION
@@ -28,18 +35,20 @@ Entry point: 0x197B (_Startup)
 _startupData is allocated at 0x1984 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x100     32
-  _Copy    *toCopyDownBeg 0x1E86
+  _Range   pZeroOut       0x100     1486
+  _Copy    *toCopyDownBeg 0x3C8B
 } _startupData;
 
 *********************************************************************************************
 SECTION-ALLOCATION SECTION
 Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
+.data                            215   R/W      0x100      0x1D6   RAM
 .init                            132     R     0x1900     0x1983   ROM
 .startData                        14     R     0x1984     0x1991   ROM
-.text                           1268     R     0x1992     0x1E85   ROM
-.copy                              2     R     0x1E86     0x1E87   ROM
+.rodata                          229     R     0x1992     0x1A76   ROM
+.text                           8724     R     0x1A77     0x3C8A   ROM
+.copy                            220     R     0x3C8B     0x3D66   ROM
 .abs_section_ffc0                 62     R     0xFFC0     0xFFFD   .absSeg0
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg1
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg2
@@ -224,13 +233,14 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_18be                  2   N/I     0x18BE     0x18BF   .absSeg181
 .abs_section_18a0                  4   N/I     0x18A0     0x18A3   .absSeg182
 .abs_section_18b0                  4   N/I     0x18B0     0x18B3   .absSeg183
-.common                           32   R/W      0x100      0x11F   RAM
-.stack                           128   R/W      0x120      0x19F   RAM
+.bss                            1222   R/W      0x1D7      0x69C   RAM
+.common                           49   R/W      0x69D      0x6CD   RAM
+.stack                           128   R/W      0x6CE      0x74D   RAM
 .vectSeg184_vect                   2     R     0xFFFE     0xFFFF   .vectSeg184
 
 Summary of section sizes per section type:
-READ_ONLY (R):         5C8 (dec:     1480)
-READ_WRITE (R/W):       A0 (dec:      160)
+READ_ONLY (R):        24A7 (dec:     9383)
+READ_WRITE (R/W):      64E (dec:     1614)
 NO_INIT (N/I):          D3 (dec:      211)
 
 *********************************************************************************************
@@ -245,37 +255,170 @@ OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 MODULE:                 -- CAN_c.obj --
 - PROCEDURES:
-     CANInit                                   1992      66     102       1   .text       
-     CANSendMsg                                19F8      8E     142       1   .text       
-     CANGetMsg                                 1A86     144     324       3   .text       
+     CANInit                                   1A77      66     102       1   .text       
+     CANSendMsg                                1ADD      8E     142       1   .text       
+     CANGetMsg                                 1B6B     144     324       3   .text       
+     ZTai_UDS_Send                             1CAF      43      67       4   .text       
 - VARIABLES:
 MODULE:                 -- MCUInit_c.obj --
 - PROCEDURES:
-     MCUInit                                   1BCA      36      54       1   .text       
-     TIMER1_init                               1C00       A      10       1   .text       
+     MCUInit                                   1CF2      36      54       1   .text       
+     TIMER1_init                               1D28       A      10       1   .text       
 - VARIABLES:
 MODULE:                 -- SCI_c.obj --
 - PROCEDURES:
-     SCISend1                                  1C0A      31      49       1   .text       
-     SCISendN                                  1C3B      2C      44       2   .text       
-     SCIRe1                                    1C67      62      98       1   .text       
-     SCIReN                                    1CC9      38      56       2   .text       
+     SCISend1                                  1D32      31      49       1   .text       
+     SCISendN                                  1D63      2C      44       2   .text       
+     SCIRe1                                    1D8F      62      98       1   .text       
+     SCIReN                                    1DF1      38      56       2   .text       
 - VARIABLES:
 MODULE:                 -- isr_c.obj --
 - PROCEDURES:
-     SCI1_Recv                                 1D01      20      32       1   .text       
-     SCI2_Recv                                 1D21      23      35       1   .text       
-     isrCAN_Recv                               1D44      27      39       1   .text       
-     isrDummy                                  1D6B       1       1      27   .text       
-     Timer1_overflow                           1D6C       B      11       1   .text       
+     SCI1_Recv                                 1E29      20      32       1   .text       
+     SCI2_Recv                                 1E49      23      35       1   .text       
+     isrCAN_Recv                               1E6C      28      40       1   .text       
+     isrDummy                                  1E94       1       1      27   .text       
+     Timer1_overflow                           1E95       8       8       1   .text       
 - VARIABLES:
      ISR_vectors                               FFC0      3E      62       0   .abs_section_ffc0
 MODULE:                 -- main_c.obj --
 - PROCEDURES:
-     main                                      1D77      2D      45       1   .text       
+     main                                      1E9D      30      48       1   .text       
 - VARIABLES:
-     g_msgGet                                   100      10      16       4   .common     
-     g_msgSend                                  110      10      16       5   .common     
+     g_msgGet                                   69D      10      16       5   .common     
+     g_msgSend                                  6AD      10      16       3   .common     
+MODULE:                 -- network_layer_c.obj --
+- PROCEDURES:
+     nt_timer_start                            1ECD      33      51       5   .text       
+     nt_timer_start_wv                         1F00      38      56       1   .text       
+     nt_timer_stop                             1F38      16      22       1   .text       
+     nt_timer_run                              1F4E      7E     126       1   .text       
+     nt_timer_chk                              1FCC      47      71       2   .text       
+     clear_network                             2013      23      35       6   .text       
+     recv_singleframe                          2036      69     105       1   .text       
+     recv_firstframe                           209F      91     145       1   .text       
+     recv_consecutiveframe                     2130      B9     185       1   .text       
+     recv_flowcontrolframe                     21E9      88     136       1   .text       
+     send_flowcontrol                          2271      2B      43       2   .text       
+     send_singleframe                          229C      6B     107       1   .text       
+     send_firstframe                           2307      7E     126       1   .text       
+     send_consecutiveframe                     2385      93     147       1   .text       
+     send_multipleframe                        2418      69     105       1   .text       
+     network_main                              2481      A5     165       2   .text       
+     network_recv_frame                        2526      DB     219       3   .text       
+     network_send_udsmsg                       2601      3B      59       2   .text       
+     network_reg_usdata                        263C      28      40       1   .text       
+- VARIABLES:
+     nwl_st                                     1D7       2       2       5   .bss        
+     g_wait_cf                                  1D9       1       1       5   .bss        
+     g_wait_fc                                  1DA       1       1       6   .bss        
+     nt_timer                                   1DB       C      12      42   .bss        
+     g_rfc_stmin                                1E7       1       1       2   .bss        
+     g_rfc_bs                                   1E8       1       1       2   .bss        
+     g_xcf_bc                                   1E9       1       1       4   .bss        
+     g_xcf_sn                                   1EA       1       1       6   .bss        
+     g_rcf_bc                                   1EB       1       1       2   .bss        
+     g_rcf_sn                                   1EC       1       1       6   .bss        
+     remain_len                                 1ED       2       2       4   .bss        
+     remain_pos                                 1EF       2       2       4   .bss        
+     recv_len                                   1F1       2       2      10   .bss        
+     recv_fdl                                   1F3       2       2       5   .bss        
+     N_USData                                   1F5       6       6      13   .bss        
+     remain_buf                                 1FB     1FF     511       3   .bss        
+     recv_buf                                   3FA     1FF     511       9   .bss        
+     g_tatype                                   6BD       1       1       4   .common     
+MODULE:                 -- obd_dtc_c.obj --
+- PROCEDURES:
+     obd_dtc_ctrl                              2664       4       4       1   .text       
+     obd_dtc_clear                             2668      27      39       1   .text       
+     get_dtc_number_by_status_mask             268F      36      54       1   .text       
+     get_dtc_by_status_mask                    26C5     110     272       5   .text       
+     get_supported_dtc                         27D5      FC     252       4   .text       
+     clear_dtc_by_group                        28D1      54      84       1   .text       
+- VARIABLES:
+     obd_dtc_para                               100      74     116      12   .data       
+     obd_dtc_data                               5F9      91     145       9   .bss        
+     dtc_off                                    68A       1       1       1   .bss        
+MODULE:                 -- uds_service_c.obj --
+- PROCEDURES:
+     uds_timer_start                           2925      23      35       6   .text       
+     uds_timer_stop                            2948      16      22       2   .text       
+     uds_timer_run                             295E      7E     126       2   .text       
+     uds_timer_chk                             29DC      1F      31       1   .text       
+     uds_no_response                           29FB       1       1       1   .text       
+     uds_negative_rsp                          29FC      4A      74      14   .text       
+     uds_positive_rsp                          2A46      1D      29      13   .text       
+     eeprom_write                              2A63       3       3       1   .text       
+     uds_check_len                             2A66      E8     232       3   .text       
+     uds_service_10                            2B4E      69     105       1   .text       
+     uds_service_11                            2BB7      29      41       1   .text       
+     uds_service_27                            2BE0      EB     235       2   .text       
+     uds_service_28                            2CCB      5F      95       1   .text       
+     uds_service_3E                            2D2A      3C      60       1   .text       
+     uds_service_85                            2D66      37      55       1   .text       
+     uds_service_22                            2D9D     147     327       5   .text       
+     uds_service_2E                            2EE4      D8     216       2   .text       
+     uds_service_14                            2FBC      9A     154       1   .text       
+     uds_service_19                            3056      D0     208       3   .text       
+     uds_service_2F                            3126     113     275       5   .text       
+     uds_service_31                            3239     107     263       4   .text       
+     uds_dataff_indication                     3340       5       5       1   .text       
+     uds_data_indication                       3345      EA     234       3   .text       
+     uds_data_confirm                          342F       5       5       1   .text       
+     uds_get_frame                             3434       E      14       1   .text       
+     uds_main                                  3442      28      40       1   .text       
+     uds_init                                  346A      2E      46       1   .text       
+- VARIABLES:
+     uds_service_list                          1992      78     120       7   .rodata     
+     uds_session                                68B       1       1       5   .bss        
+     req_seed                                   68C       1       1       3   .bss        
+     curr_sa                                    68D       2       2       5   .bss        
+     uds_timer                                  68F       8       8      26   .bss        
+     uds_fsa_cnt                                697       1       1       3   .bss        
+     org_seed_buf                               698       4       4       3   .bss        
+     ssp_flg                                    69C       1       1       2   .bss        
+     dis_normal_xmit                            6BE       1       1       1   .common     
+     dis_normal_recv                            6BF       1       1       1   .common     
+MODULE:                 -- uds_status_c.obj --
+- PROCEDURES:
+     seedTOKey                                 3498      6D     109       1   .text       
+     uds_security_access                       3505      48      72       1   .text       
+- VARIABLES:
+MODULE:                 -- uds_support_c.obj --
+- PROCEDURES:
+     rtctrl_nothing                            354D       2       2       3   .text       
+     ioctrl_init_backlight                     354F       1       1       1   .text       
+     ioctrl_stop_backlight                     3550       1       1       1   .text       
+     ioctrl_init_buzzer                        3551       1       1       1   .text       
+     ioctrl_stop_buzzer                        3552       1       1       1   .text       
+     ioctrl_init_gages                         3553       1       1       1   .text       
+     ioctrl_stop_gages                         3554       1       1       1   .text       
+     ioctrl_init_display                       3555       1       1       1   .text       
+     ioctrl_stop_display                       3556       1       1       1   .text       
+     ioctrl_init_indicator                     3557       1       1       1   .text       
+     ioctrl_stop_indicator                     3558       1       1       1   .text       
+     uds_ioctrl_allstop                        3559      3D      61       1   .text       
+     uds_load_rwdata                           3596       1       1       1   .text       
+- VARIABLES:
+     rwdata_list                               1A0A      63      99       9   .rodata     
+     rtctrl_list                               1A6D       A      10       7   .rodata     
+     ASC_boot_ver                               174       A      10       1   .data       
+     ASC_sys_supplier_id                        17E       5       5       1   .data       
+     ASC_soft_ver                               183       A      10       1   .data       
+     ASC_sys_name                               18D       A      10       1   .data       
+     ioctrl_list                                197      3C      60      12   .data       
+     backlight_level                            6C0       2       2       1   .common     
+     buzzer                                     6C2       2       2       1   .common     
+     gages                                      6C4       2       2       1   .common     
+     segment_disp                               6C6       2       2       1   .common     
+     indicator                                  6C8       6       6       1   .common     
+MODULE:                 -- uds_util_c.obj --
+- PROCEDURES:
+     rand_u8                                   3597      19      25       1   .text       
+     host_to_cans                              35B0      1A      26       1   .text       
+     can_to_hostl                              35CA      A0     160       3   .text       
+     memcpy                                    366A      B0     176       3   .text       
+- VARIABLES:
 MODULE:                 -- start08_c.obj --
 - PROCEDURES:
      loadByte                                  1900       E      14       5   .init       
@@ -284,7 +427,7 @@ MODULE:                 -- start08_c.obj --
 - VARIABLES:
      _startupData                              1984       6       6       4   .startData  
 - LABELS:
-     __SEG_END_SSTACK                           1A0       0       0       1               
+     __SEG_END_SSTACK                           74E       0       0       1               
 MODULE:                 -- mc9s08dz60_c.obj --
 - PROCEDURES:
 - VARIABLES:
@@ -473,46 +616,125 @@ MODULE:                 -- mc9s08dz60_c.obj --
      _CANTIDR                                  18B0       4       4       2   .abs_section_18b0
 MODULE:                 -- rtshc08.o (ansiis.lib) --
 - PROCEDURES:
-     _PUSH_ARGS_L                              1DA4      20      32       1   .text       
-     _ENTER_UNARY_L                            1DC4      29      41       2   .text       
-     _ENTER_BINARY_L                           1DED      16      22       1   .text       
-     _LOR_k_is_k_or_j                          1E03      1F      31       1   .text       
-     _ILSR                                     1E22       C      12       1   .text       
-     _ILSL                                     1E2E       C      12       3   .text       
-     _LOR                                      1E3A       6       6       1   .text       
-     _LLSR                                     1E40      16      22       1   .text       
-     _LLSL                                     1E56      16      22       1   .text       
-     _POP32                                    1E6C      1A      26       1   .text       
+     _PUSH_ARGS_L                              371A      20      32       2   .text       
+     _ENTER_UNARY_L                            373A      29      41       3   .text       
+     _ENTER_BINARY_L                           3763      16      22       3   .text       
+     _ENTER_BINARY_L_RC                        3779      19      25       6   .text       
+     _IDIVMOD                                  3792      69     105       1   .text       
+     _SPLITSIGN                                37FB      1C      28       1   .text       
+     _LADD_k_is_k_plus_j                       3817      1F      31       1   .text       
+     _k_is_k_plus_j_l                          3836      1E      30       2   .text       
+     _k_is_k_plus_j_i                          3854      12      18       3   .text       
+     _LSUB_k_is_k_minus_j                      3866      1F      31       1   .text       
+     _LOR_k_is_k_or_j                          3885      1F      31       1   .text       
+     _LXOR_k_is_k_xor_j                        38A4      1F      31       1   .text       
+     _LMUL_k_is_k_mul_j                        38C3      81     129       1   .text       
+     _LDIVMOD                                  3944      A4     164       2   .text       
+     _NEG_L_HX                                 39E8      13      19       3   .text       
+     _ABS_L_HX                                 39FB       6       6       2   .text       
+     _SPLITSIGN_L                              3A01       A      10       2   .text       
+     _LMODS_k_is_k_mod_j                       3A0B      18      24       1   .text       
+     _LDIVS_k_is_k_div_j                       3A23      27      39       1   .text       
+     _LCMP_k_rel_j                             3A4A      1F      31       2   .text       
+     _IMUL_STAR08                              3A69      27      39       1   .text       
+     _IMODS_STAR08                             3A90      25      37       1   .text       
+     _ILSR                                     3AB5       C      12       1   .text       
+     _ILSL                                     3AC1       C      12       3   .text       
+     _LDEC                                     3ACD      1C      28       2   .text       
+     _LADD_RC                                  3AE9       6       6       1   .text       
+     _LSUB                                     3AEF       6       6       1   .text       
+     _LOR                                      3AF5       6       6       6   .text       
+     _LXOR_RC                                  3AFB       6       6       1   .text       
+     _LMUL_RC                                  3B01       6       6       2   .text       
+     _LDIVS_RC                                 3B07       6       6       1   .text       
+     _LMODS_RC                                 3B0D       6       6       1   .text       
+     _LLSR                                     3B13      16      22       1   .text       
+     _LLSL                                     3B29      16      22       6   .text       
+     _LCMP                                     3B3F       6       6       1   .text       
+     _LCMP_RC                                  3B45       6       6       3   .text       
+     _COPY                                     3B4B      30      48       3   .text       
+     _POP32                                    3B7B      1A      26      15   .text       
+     _CALL_STAR08                              3B95      20      32      11   .text       
+     _Jump_Table_Offset                        3BB5      19      25       2   .text       
+     _Jump_Table_Header_Offset                 3BCE      24      36       3   .text       
+     _Search_Table_8_Offset                    3BF2      25      37       1   .text       
 - VARIABLES:
+MODULE:                 -- stdlib.o (ansiis.lib) --
+- PROCEDURES:
+     rand                                      3C17      6B     107       1   .text       
+     srand                                     3C82       9       9       1   .text       
+- VARIABLES:
+     seed                                       1D3       4       4       9   .data       
 
 *********************************************************************************************
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  CAN_c.obj                                    0    568      0
+  CAN_c.obj                                    0    635      0
   MCUInit_c.obj                                0     64      0
   SCI_c.obj                                    0    247      0
-  isr_c.obj                                    0    118     62
-  main_c.obj                                  32     45      0
+  isr_c.obj                                    0    116     62
+  main_c.obj                                  32     48      0
+  network_layer_c.obj                       1059   1943      0
+  obd_dtc_c.obj                              262    705      0
+  uds_service_c.obj                           20   2931    120
+  uds_status_c.obj                             0    181      0
+  uds_support_c.obj                          109     74    109
+  uds_util_c.obj                               0    387      0
   start08_c.obj                                0    132      0
   mc9s08dz60_c.obj                           211      0      0
-  rtshc08.o (ansiis.lib)                       0    226      0
-  other                                      128     16      2
+  rtshc08.o (ansiis.lib)                       0   1277      0
+  stdlib.o (ansiis.lib)                        4    116      0
+  other                                      128     16    220
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  CANInit CANSendMsg CANGetMsg MCUInit TIMER1_init SCISend1 SCISendN SCIRe1 
-  SCIReN SCI1_Recv SCI2_Recv isrCAN_Recv isrDummy Timer1_overflow main 
-  _PUSH_ARGS_L _ENTER_UNARY_L _ENTER_BINARY_L _LOR_k_is_k_or_j _ILSR _ILSL _LOR 
-  _LLSR _LLSL _POP32 
+  CANInit CANSendMsg CANGetMsg ZTai_UDS_Send MCUInit TIMER1_init SCISend1 
+  SCISendN SCIRe1 SCIReN SCI1_Recv SCI2_Recv isrCAN_Recv isrDummy 
+  Timer1_overflow main nt_timer_start nt_timer_start_wv nt_timer_stop 
+  nt_timer_run nt_timer_chk clear_network recv_singleframe recv_firstframe 
+  recv_consecutiveframe recv_flowcontrolframe send_flowcontrol send_singleframe 
+  send_firstframe send_consecutiveframe send_multipleframe network_main 
+  network_recv_frame network_send_udsmsg network_reg_usdata obd_dtc_ctrl 
+  obd_dtc_clear get_dtc_number_by_status_mask get_dtc_by_status_mask 
+  get_supported_dtc clear_dtc_by_group uds_timer_start uds_timer_stop 
+  uds_timer_run uds_timer_chk uds_no_response uds_negative_rsp uds_positive_rsp 
+  eeprom_write uds_check_len uds_service_10 uds_service_11 uds_service_27 
+  uds_service_28 uds_service_3E uds_service_85 uds_service_22 uds_service_2E 
+  uds_service_14 uds_service_19 uds_service_2F uds_service_31 
+  uds_dataff_indication uds_data_indication uds_data_confirm uds_get_frame 
+  uds_main uds_init seedTOKey uds_security_access rtctrl_nothing 
+  ioctrl_init_backlight ioctrl_stop_backlight ioctrl_init_buzzer 
+  ioctrl_stop_buzzer ioctrl_init_gages ioctrl_stop_gages ioctrl_init_display 
+  ioctrl_stop_display ioctrl_init_indicator ioctrl_stop_indicator 
+  uds_ioctrl_allstop uds_load_rwdata rand_u8 host_to_cans can_to_hostl memcpy 
+  _PUSH_ARGS_L _ENTER_UNARY_L _ENTER_BINARY_L _ENTER_BINARY_L_RC _IDIVMOD 
+  _SPLITSIGN _LADD_k_is_k_plus_j _k_is_k_plus_j_l _k_is_k_plus_j_i 
+  _LSUB_k_is_k_minus_j _LOR_k_is_k_or_j _LXOR_k_is_k_xor_j _LMUL_k_is_k_mul_j 
+  _LDIVMOD _NEG_L_HX _ABS_L_HX _SPLITSIGN_L _LMODS_k_is_k_mod_j 
+  _LDIVS_k_is_k_div_j _LCMP_k_rel_j _IMUL_STAR08 _IMODS_STAR08 _ILSR _ILSL 
+  _LDEC _LADD_RC _LSUB _LOR _LXOR_RC _LMUL_RC _LDIVS_RC _LMODS_RC _LLSR _LLSL 
+  _LCMP _LCMP_RC _COPY _POP32 _CALL_STAR08 _Jump_Table_Offset 
+  _Jump_Table_Header_Offset _Search_Table_8_Offset rand srand 
+SECTION: ".data"
+  obd_dtc_para ASC_boot_ver ASC_sys_supplier_id ASC_soft_ver ASC_sys_name 
+  ioctrl_list seed 
+SECTION: ".bss"
+  nwl_st g_wait_cf g_wait_fc nt_timer g_rfc_stmin g_rfc_bs g_xcf_bc g_xcf_sn 
+  g_rcf_bc g_rcf_sn remain_len remain_pos recv_len recv_fdl N_USData remain_buf 
+  recv_buf obd_dtc_data dtc_off uds_session req_seed curr_sa uds_timer 
+  uds_fsa_cnt org_seed_buf ssp_flg 
 SECTION: ".init"
   loadByte Init _Startup 
+SECTION: ".rodata"
+  uds_service_list rwdata_list rtctrl_list 
 SECTION: ".abs_section_ffc0"
   ISR_vectors 
 SECTION: ".common"
-  g_msgGet g_msgSend 
+  g_msgGet g_msgSend g_tatype dis_normal_xmit dis_normal_recv backlight_level 
+  buzzer gages segment_disp indicator 
 SECTION: ".abs_section_0"
   _PTAD 
 SECTION: ".abs_section_1"
@@ -964,8 +1186,49 @@ OBJECT LIST SORTED BY ADDRESS
      _RTCSC                                      6C       1       1       0   .abs_section_6c
      _RTCCNT                                     6D       1       1       0   .abs_section_6d
      _RTCMOD                                     6E       1       1       0   .abs_section_6e
-     g_msgGet                                   100      10      16       4   .common     
-     g_msgSend                                  110      10      16       5   .common     
+     obd_dtc_para                               100      74     116      12   .data       
+     ASC_boot_ver                               174       A      10       1   .data       
+     ASC_sys_supplier_id                        17E       5       5       1   .data       
+     ASC_soft_ver                               183       A      10       1   .data       
+     ASC_sys_name                               18D       A      10       1   .data       
+     ioctrl_list                                197      3C      60      12   .data       
+     seed                                       1D3       4       4       9   .data       
+     nwl_st                                     1D7       2       2       5   .bss        
+     g_wait_cf                                  1D9       1       1       5   .bss        
+     g_wait_fc                                  1DA       1       1       6   .bss        
+     nt_timer                                   1DB       C      12      42   .bss        
+     g_rfc_stmin                                1E7       1       1       2   .bss        
+     g_rfc_bs                                   1E8       1       1       2   .bss        
+     g_xcf_bc                                   1E9       1       1       4   .bss        
+     g_xcf_sn                                   1EA       1       1       6   .bss        
+     g_rcf_bc                                   1EB       1       1       2   .bss        
+     g_rcf_sn                                   1EC       1       1       6   .bss        
+     remain_len                                 1ED       2       2       4   .bss        
+     remain_pos                                 1EF       2       2       4   .bss        
+     recv_len                                   1F1       2       2      10   .bss        
+     recv_fdl                                   1F3       2       2       5   .bss        
+     N_USData                                   1F5       6       6      13   .bss        
+     remain_buf                                 1FB     1FF     511       3   .bss        
+     recv_buf                                   3FA     1FF     511       9   .bss        
+     obd_dtc_data                               5F9      91     145       9   .bss        
+     dtc_off                                    68A       1       1       1   .bss        
+     uds_session                                68B       1       1       5   .bss        
+     req_seed                                   68C       1       1       3   .bss        
+     curr_sa                                    68D       2       2       5   .bss        
+     uds_timer                                  68F       8       8      26   .bss        
+     uds_fsa_cnt                                697       1       1       3   .bss        
+     org_seed_buf                               698       4       4       3   .bss        
+     ssp_flg                                    69C       1       1       2   .bss        
+     g_msgGet                                   69D      10      16       5   .common     
+     g_msgSend                                  6AD      10      16       3   .common     
+     g_tatype                                   6BD       1       1       4   .common     
+     dis_normal_xmit                            6BE       1       1       1   .common     
+     dis_normal_recv                            6BF       1       1       1   .common     
+     backlight_level                            6C0       2       2       1   .common     
+     buzzer                                     6C2       2       2       1   .common     
+     gages                                      6C4       2       2       1   .common     
+     segment_disp                               6C6       2       2       1   .common     
+     indicator                                  6C8       6       6       1   .common     
      _SRS                                      1800       1       1       0   .abs_section_1800
      _SBDFR                                    1801       1       1       0   .abs_section_1801
      _SOPT1                                    1802       1       1       1   .abs_section_1802
@@ -1072,31 +1335,140 @@ OBJECT LIST SORTED BY ADDRESS
      loadByte                                  1900       E      14       5   .init       
      Init                                      190E      6D     109       1   .init       
      _Startup                                  197B       9       9       0   .init       
-     CANInit                                   1992      66     102       1   .text       
-     CANSendMsg                                19F8      8E     142       1   .text       
-     CANGetMsg                                 1A86     144     324       3   .text       
-     MCUInit                                   1BCA      36      54       1   .text       
-     TIMER1_init                               1C00       A      10       1   .text       
-     SCISend1                                  1C0A      31      49       1   .text       
-     SCISendN                                  1C3B      2C      44       2   .text       
-     SCIRe1                                    1C67      62      98       1   .text       
-     SCIReN                                    1CC9      38      56       2   .text       
-     SCI1_Recv                                 1D01      20      32       1   .text       
-     SCI2_Recv                                 1D21      23      35       1   .text       
-     isrCAN_Recv                               1D44      27      39       1   .text       
-     isrDummy                                  1D6B       1       1      27   .text       
-     Timer1_overflow                           1D6C       B      11       1   .text       
-     main                                      1D77      2D      45       1   .text       
-     _PUSH_ARGS_L                              1DA4      20      32       1   .text       
-     _ENTER_UNARY_L                            1DC4      29      41       2   .text       
-     _ENTER_BINARY_L                           1DED      16      22       1   .text       
-     _LOR_k_is_k_or_j                          1E03      1F      31       1   .text       
-     _ILSR                                     1E22       C      12       1   .text       
-     _ILSL                                     1E2E       C      12       3   .text       
-     _LOR                                      1E3A       6       6       1   .text       
-     _LLSR                                     1E40      16      22       1   .text       
-     _LLSL                                     1E56      16      22       1   .text       
-     _POP32                                    1E6C      1A      26       1   .text       
+     uds_service_list                          1992      78     120       7   .rodata     
+     rwdata_list                               1A0A      63      99       9   .rodata     
+     rtctrl_list                               1A6D       A      10       7   .rodata     
+     CANInit                                   1A77      66     102       1   .text       
+     CANSendMsg                                1ADD      8E     142       1   .text       
+     CANGetMsg                                 1B6B     144     324       3   .text       
+     ZTai_UDS_Send                             1CAF      43      67       4   .text       
+     MCUInit                                   1CF2      36      54       1   .text       
+     TIMER1_init                               1D28       A      10       1   .text       
+     SCISend1                                  1D32      31      49       1   .text       
+     SCISendN                                  1D63      2C      44       2   .text       
+     SCIRe1                                    1D8F      62      98       1   .text       
+     SCIReN                                    1DF1      38      56       2   .text       
+     SCI1_Recv                                 1E29      20      32       1   .text       
+     SCI2_Recv                                 1E49      23      35       1   .text       
+     isrCAN_Recv                               1E6C      28      40       1   .text       
+     isrDummy                                  1E94       1       1      27   .text       
+     Timer1_overflow                           1E95       8       8       1   .text       
+     main                                      1E9D      30      48       1   .text       
+     nt_timer_start                            1ECD      33      51       5   .text       
+     nt_timer_start_wv                         1F00      38      56       1   .text       
+     nt_timer_stop                             1F38      16      22       1   .text       
+     nt_timer_run                              1F4E      7E     126       1   .text       
+     nt_timer_chk                              1FCC      47      71       2   .text       
+     clear_network                             2013      23      35       6   .text       
+     recv_singleframe                          2036      69     105       1   .text       
+     recv_firstframe                           209F      91     145       1   .text       
+     recv_consecutiveframe                     2130      B9     185       1   .text       
+     recv_flowcontrolframe                     21E9      88     136       1   .text       
+     send_flowcontrol                          2271      2B      43       2   .text       
+     send_singleframe                          229C      6B     107       1   .text       
+     send_firstframe                           2307      7E     126       1   .text       
+     send_consecutiveframe                     2385      93     147       1   .text       
+     send_multipleframe                        2418      69     105       1   .text       
+     network_main                              2481      A5     165       2   .text       
+     network_recv_frame                        2526      DB     219       3   .text       
+     network_send_udsmsg                       2601      3B      59       2   .text       
+     network_reg_usdata                        263C      28      40       1   .text       
+     obd_dtc_ctrl                              2664       4       4       1   .text       
+     obd_dtc_clear                             2668      27      39       1   .text       
+     get_dtc_number_by_status_mask             268F      36      54       1   .text       
+     get_dtc_by_status_mask                    26C5     110     272       5   .text       
+     get_supported_dtc                         27D5      FC     252       4   .text       
+     clear_dtc_by_group                        28D1      54      84       1   .text       
+     uds_timer_start                           2925      23      35       6   .text       
+     uds_timer_stop                            2948      16      22       2   .text       
+     uds_timer_run                             295E      7E     126       2   .text       
+     uds_timer_chk                             29DC      1F      31       1   .text       
+     uds_no_response                           29FB       1       1       1   .text       
+     uds_negative_rsp                          29FC      4A      74      14   .text       
+     uds_positive_rsp                          2A46      1D      29      13   .text       
+     eeprom_write                              2A63       3       3       1   .text       
+     uds_check_len                             2A66      E8     232       3   .text       
+     uds_service_10                            2B4E      69     105       1   .text       
+     uds_service_11                            2BB7      29      41       1   .text       
+     uds_service_27                            2BE0      EB     235       2   .text       
+     uds_service_28                            2CCB      5F      95       1   .text       
+     uds_service_3E                            2D2A      3C      60       1   .text       
+     uds_service_85                            2D66      37      55       1   .text       
+     uds_service_22                            2D9D     147     327       5   .text       
+     uds_service_2E                            2EE4      D8     216       2   .text       
+     uds_service_14                            2FBC      9A     154       1   .text       
+     uds_service_19                            3056      D0     208       3   .text       
+     uds_service_2F                            3126     113     275       5   .text       
+     uds_service_31                            3239     107     263       4   .text       
+     uds_dataff_indication                     3340       5       5       1   .text       
+     uds_data_indication                       3345      EA     234       3   .text       
+     uds_data_confirm                          342F       5       5       1   .text       
+     uds_get_frame                             3434       E      14       1   .text       
+     uds_main                                  3442      28      40       1   .text       
+     uds_init                                  346A      2E      46       1   .text       
+     seedTOKey                                 3498      6D     109       1   .text       
+     uds_security_access                       3505      48      72       1   .text       
+     rtctrl_nothing                            354D       2       2       3   .text       
+     ioctrl_init_backlight                     354F       1       1       1   .text       
+     ioctrl_stop_backlight                     3550       1       1       1   .text       
+     ioctrl_init_buzzer                        3551       1       1       1   .text       
+     ioctrl_stop_buzzer                        3552       1       1       1   .text       
+     ioctrl_init_gages                         3553       1       1       1   .text       
+     ioctrl_stop_gages                         3554       1       1       1   .text       
+     ioctrl_init_display                       3555       1       1       1   .text       
+     ioctrl_stop_display                       3556       1       1       1   .text       
+     ioctrl_init_indicator                     3557       1       1       1   .text       
+     ioctrl_stop_indicator                     3558       1       1       1   .text       
+     uds_ioctrl_allstop                        3559      3D      61       1   .text       
+     uds_load_rwdata                           3596       1       1       1   .text       
+     rand_u8                                   3597      19      25       1   .text       
+     host_to_cans                              35B0      1A      26       1   .text       
+     can_to_hostl                              35CA      A0     160       3   .text       
+     memcpy                                    366A      B0     176       3   .text       
+     _PUSH_ARGS_L                              371A      20      32       2   .text       
+     _ENTER_UNARY_L                            373A      29      41       3   .text       
+     _ENTER_BINARY_L                           3763      16      22       3   .text       
+     _ENTER_BINARY_L_RC                        3779      19      25       6   .text       
+     _IDIVMOD                                  3792      69     105       1   .text       
+     _SPLITSIGN                                37FB      1C      28       1   .text       
+     _LADD_k_is_k_plus_j                       3817      1F      31       1   .text       
+     _k_is_k_plus_j_l                          3836      1E      30       2   .text       
+     _k_is_k_plus_j_i                          3854      12      18       3   .text       
+     _LSUB_k_is_k_minus_j                      3866      1F      31       1   .text       
+     _LOR_k_is_k_or_j                          3885      1F      31       1   .text       
+     _LXOR_k_is_k_xor_j                        38A4      1F      31       1   .text       
+     _LMUL_k_is_k_mul_j                        38C3      81     129       1   .text       
+     _LDIVMOD                                  3944      A4     164       2   .text       
+     _NEG_L_HX                                 39E8      13      19       3   .text       
+     _ABS_L_HX                                 39FB       6       6       2   .text       
+     _SPLITSIGN_L                              3A01       A      10       2   .text       
+     _LMODS_k_is_k_mod_j                       3A0B      18      24       1   .text       
+     _LDIVS_k_is_k_div_j                       3A23      27      39       1   .text       
+     _LCMP_k_rel_j                             3A4A      1F      31       2   .text       
+     _IMUL_STAR08                              3A69      27      39       1   .text       
+     _IMODS_STAR08                             3A90      25      37       1   .text       
+     _ILSR                                     3AB5       C      12       1   .text       
+     _ILSL                                     3AC1       C      12       3   .text       
+     _LDEC                                     3ACD      1C      28       2   .text       
+     _LADD_RC                                  3AE9       6       6       1   .text       
+     _LSUB                                     3AEF       6       6       1   .text       
+     _LOR                                      3AF5       6       6       6   .text       
+     _LXOR_RC                                  3AFB       6       6       1   .text       
+     _LMUL_RC                                  3B01       6       6       2   .text       
+     _LDIVS_RC                                 3B07       6       6       1   .text       
+     _LMODS_RC                                 3B0D       6       6       1   .text       
+     _LLSR                                     3B13      16      22       1   .text       
+     _LLSL                                     3B29      16      22       6   .text       
+     _LCMP                                     3B3F       6       6       1   .text       
+     _LCMP_RC                                  3B45       6       6       3   .text       
+     _COPY                                     3B4B      30      48       3   .text       
+     _POP32                                    3B7B      1A      26      15   .text       
+     _CALL_STAR08                              3B95      20      32      11   .text       
+     _Jump_Table_Offset                        3BB5      19      25       2   .text       
+     _Jump_Table_Header_Offset                 3BCE      24      36       3   .text       
+     _Search_Table_8_Offset                    3BF2      25      37       1   .text       
+     rand                                      3C17      6B     107       1   .text       
+     srand                                     3C82       9       9       1   .text       
      ISR_vectors                               FFC0      3E      62       0   .abs_section_ffc0
 
 *********************************************************************************************
@@ -1109,41 +1481,105 @@ SCI_c.obj:
   SCIInit SCISendString 
 isr_c.obj:
   isrCAN_Send isrCAN_Err isrCAN_Wu 
+obd_dtc_c.obj:
+  obd_dtc_start_opcycle uds_update_obddtc uds_load_obddtc uds_save_obddtc 
+uds_support_c.obj:
+  uds_save_rwdata 
+uds_util_c.obj:
+  host_to_canl 
 rtshc08.o (ansiis.lib):
-  _PUSH_ARGS_D _ENTER_UNARY_L64 _ENTER_UNARY_L64_4 _ENTER_BINARY_L_RC 
-  _ENTER_BINARY_L_LC _ENTER_BINARY_L64 _ENTER_BINARY_L64_LC 
-  _ENTER_BINARY_L64_RC _IDIVMOD _SPLITSIGN _LADD_k_is_k_plus_j _k_is_k_plus_j_l 
-  _k_is_k_plus_j_i _LSUB_k_is_k_minus_j _LAND_k_is_k_and_j _LXOR_k_is_k_xor_j 
-  _LMUL_k_is_k_mul_j _LDIVMOD _NEG_L_HX _ABS_L_HX _SPLITSIGN_L 
-  _LMODU_k_is_k_mod_j _LDIVU_k_is_k_div_j _LMODS_k_is_k_mod_j 
-  _LDIVS_k_is_k_div_j _LCMP_k_rel_j _CMP24_k_rel_j _BMULS _BDIVS _BMODS 
-  _IMUL_STAR08 _IDIVS_STAR08 _IDIVU_STAR08 _IMODS_STAR08 _IMODU_STAR08 _IDIVU_8 
-  _IMODU_8 _IASR _ICMP _LINC _LDEC _LNEG _LNOT _LADD _LADD_RC _LSUB _LSUB_LC 
-  _LSUB_RC _LAND _LAND_RC _LOR_RC _LXOR _LXOR_RC _LMUL _LMUL_RC _LDIVS 
-  _LDIVS_LC _LDIVS_RC _LDIVU _LDIVU_LC _LDIVU_RC _LMODS _LMODS_LC _LMODS_RC 
-  _LMODU _LMODU_LC _LMODU_RC _LASR _LCMP _LCMP_RC _PUSH_ARGS_24 
-  _ENTER_BINARY_24_RC _ENTER_BINARY_24 _CMP24 _CMP24_RC _COPY _COPY_L _POP64 
-  _STORE32 _STORE64 _SEXT8_32 _SEXT16_32 _CALL_STAR08 _CALL_STAR08_FAR 
-  _Jump_Table_Addr _Jump_Table_Offset _Jump_Table_Header_Addr 
-  _Jump_Table_Header_Offset _Search_Table_16_Addr _Search_Table_16_Offset 
-  _Search_Table_8_Addr _Search_Table_8_Offset _PUSH_CC _POP_CC 
-  _CONV_FAR_TO_NEAR _CONV_FAR_TO_LINEAR _CONV_LINEAR_TO_FAR 
+  _PUSH_ARGS_D _ENTER_UNARY_L64 _ENTER_UNARY_L64_4 _ENTER_BINARY_L_LC 
+  _ENTER_BINARY_L64 _ENTER_BINARY_L64_LC _ENTER_BINARY_L64_RC 
+  _LAND_k_is_k_and_j _LMODU_k_is_k_mod_j _LDIVU_k_is_k_div_j _CMP24_k_rel_j 
+  _BMULS _BDIVS _BMODS _IDIVS_STAR08 _IDIVU_STAR08 _IMODU_STAR08 _IDIVU_8 
+  _IMODU_8 _IASR _ICMP _LINC _LNEG _LNOT _LADD _LSUB_LC _LSUB_RC _LAND _LAND_RC 
+  _LOR_RC _LXOR _LMUL _LDIVS _LDIVS_LC _LDIVU _LDIVU_LC _LDIVU_RC _LMODS 
+  _LMODS_LC _LMODU _LMODU_LC _LMODU_RC _LASR _PUSH_ARGS_24 _ENTER_BINARY_24_RC 
+  _ENTER_BINARY_24 _CMP24 _CMP24_RC _COPY_L _POP64 _STORE32 _STORE64 _SEXT8_32 
+  _SEXT16_32 _CALL_STAR08_FAR _Jump_Table_Addr _Jump_Table_Header_Addr 
+  _Search_Table_16_Addr _Search_Table_16_Offset _Search_Table_8_Addr _PUSH_CC 
+  _POP_CC _CONV_FAR_TO_NEAR _CONV_FAR_TO_LINEAR _CONV_LINEAR_TO_FAR 
+stdlib.o (ansiis.lib):
+  atexit getenv system mblen mbtowc wctomb mbstowcs wcstombs CheckCharWithBase 
+  _strtoul strtoul _strtol strtol _itoa bsearch swap qsort div ldiv abs labs 
 NOT USED VARIABLES
+obd_dtc_c.obj:
+  dtc_off_ex_bat 
 rtshc08.o (ansiis.lib):
   _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
+stdlib.o (ansiis.lib):
+  channels errno 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0x1E86 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0x3C8B ---- SIZE       4 ---
+Filling bytes inserted
+ 00D60101
+------- ROM-ADDRESS: 0x3C8F ---- RAM-ADDRESS: 0x101 ---- SIZE     115 ---
+Name of initialized Object : obd_dtc_para:1
+ 04621A0004 631B00F003 1600F00317
+ 00C0738800 C1000100C1 010100C121
+ 0100C12701 00C1280100 C1290100C1
+ 310100C141 0000C15101 00C1630000
+ C1690000C1 810100C236 0100C16400
+ 00C1670000 953D010095 3E0100953F
+ 0100954001 0095410100 9544010095
+ 4501009546 0100954701
+------- ROM-ADDRESS: 0x3D02 ---- RAM-ADDRESS: 0x174 ---- SIZE       8 ---
+Name of initialized Object : ASC_boot_ver
+ 7665722D30 2E3031
+------- ROM-ADDRESS: 0x3D0A ---- SIZE       2 ---
+Filling bytes inserted
+ 0000
+------- ROM-ADDRESS: 0x3D0C ---- RAM-ADDRESS: 0x17E ---- SIZE       5 ---
+Name of initialized Object : ASC_sys_supplier_id
+ 3132333435
+------- ROM-ADDRESS: 0x3D11 ---- RAM-ADDRESS: 0x183 ---- SIZE       8 ---
+Name of initialized Object : ASC_soft_ver
+ 7665722D30 2E3031
+------- ROM-ADDRESS: 0x3D19 ---- SIZE       2 ---
+Filling bytes inserted
+ 0000
+------- ROM-ADDRESS: 0x3D1B ---- RAM-ADDRESS: 0x18D ---- SIZE       8 ---
+Name of initialized Object : ASC_sys_name
+ 4943552D6D 313265
+------- ROM-ADDRESS: 0x3D23 ---- SIZE       2 ---
+Filling bytes inserted
+ 0000
+------- ROM-ADDRESS: 0x3D25 ---- RAM-ADDRESS: 0x197 ---- SIZE      60 ---
+Name of initialized Object : ioctrl_list
+ F09206C002 000000354F 3550F02006
+ C202000000 35513552F0 2106C40200
+ 0000355335 54F02206C6 0200000035
+ 553556F024 06C8060000 0035573558
+------- ROM-ADDRESS: 0x3D61 ---- SIZE       3 ---
+Filling bytes inserted
+ 000000
+------- ROM-ADDRESS: 0x3D64 ---- RAM-ADDRESS: 0x1D6 ---- SIZE       1 ---
+Name of initialized Object : seed:3
+ 01
+------- ROM-ADDRESS: 0x3D65 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
 *********************************************************************************************
 OBJECT-DEPENDENCIES SECTION
 ---------------------------------------------------------------------------------------------
+ioctrl_list               USES backlight_level ioctrl_init_backlight buzzer 
+                                gages segment_disp indicator ioctrl_stop_backlight 
+                                ioctrl_init_buzzer ioctrl_stop_buzzer ioctrl_init_gages 
+                                ioctrl_stop_gages ioctrl_init_display ioctrl_stop_display 
+                                ioctrl_init_indicator ioctrl_stop_indicator 
 Init                      USES _startupData loadByte 
 _Startup                  USES __SEG_END_SSTACK Init main 
+uds_service_list          USES uds_service_10 uds_service_11 uds_service_27 
+                                uds_service_28 uds_service_3E uds_service_85 uds_service_22 
+                                uds_service_2E uds_service_14 uds_service_19 uds_service_2F 
+                                uds_service_31 
+rwdata_list               USES ASC_boot_ver uds_session ASC_sys_supplier_id 
+                                ASC_soft_ver ASC_sys_name 
+rtctrl_list               USES rtctrl_nothing 
 CANInit                   USES _CANCTL1 _CANCTL0 _CANIDMR0 _CANIDMR1 _CANIDMR2 
                                 _CANIDMR3 _CANIDMR4 _CANIDMR5 _CANIDMR6 _CANIDMR7 
                                 _CANBTR0 _CANBTR1 
@@ -1151,19 +1587,128 @@ CANSendMsg                USES _CANCTL0 _CANTFLG _CANTBSEL _LLSR _CANTIDR
                                 _CANTDSR0 _CANTDLR _CANTTBPR 
 CANGetMsg                 USES _CANRFLG CANGetMsg _CANRIDR _ILSL _ILSR _LLSL 
                                 _LOR _POP32 _CANRDLR _CANRDSR0 
+ZTai_UDS_Send             USES CANSendMsg 
 MCUInit                   USES _SOPT1 _MCGC2 _MCGSC _MCGC1 _MCGC3 
 TIMER1_init               USES _TPM1MOD _TPM1SC 
 SCISendN                  USES SCISend1 
 SCIReN                    USES SCIRe1 
 SCI1_Recv                 USES SCIReN SCISendN 
 SCI2_Recv                 USES SCIReN SCISendN 
-isrCAN_Recv               USES g_msgGet CANGetMsg g_msgSend 
-Timer1_overflow           USES g_msgSend CANSendMsg _TPM1SC 
-main                      USES g_msgSend MCUInit CANInit TIMER1_init _CANRIER 
+isrCAN_Recv               USES g_msgGet CANGetMsg uds_get_frame 
+Timer1_overflow           USES uds_main _TPM1SC 
+main                      USES g_msgSend MCUInit uds_init CANInit TIMER1_init 
+                                _CANRIER 
+nt_timer_start            USES nt_timer g_rfc_stmin 
+nt_timer_start_wv         USES nt_timer 
+nt_timer_stop             USES nt_timer 
+nt_timer_run              USES nt_timer _LDEC _POP32 
+nt_timer_chk              USES nt_timer 
+clear_network             USES nwl_st g_wait_cf g_wait_fc g_xcf_bc g_xcf_sn 
+                                g_rcf_bc g_rcf_sn nt_timer_stop 
+recv_singleframe          USES recv_fdl recv_buf recv_len N_USData 
+                                _CALL_STAR08 
+recv_firstframe           USES send_flowcontrol recv_fdl recv_buf recv_len 
+                                g_rcf_bc g_wait_cf nt_timer_start g_rcf_sn N_USData 
+                                _CALL_STAR08 
+recv_consecutiveframe     USES nt_timer_chk g_rcf_sn recv_buf recv_len 
+                                N_USData _CALL_STAR08 recv_fdl g_wait_cf nt_timer_start 
+recv_flowcontrolframe     USES nt_timer_chk g_tatype g_wait_fc N_USData 
+                                _CALL_STAR08 nt_timer_start g_rfc_bs g_rfc_stmin g_xcf_bc 
+                                nt_timer_start_wv 
+send_flowcontrol          USES ZTai_UDS_Send 
+send_singleframe          USES ZTai_UDS_Send 
+send_firstframe           USES ZTai_UDS_Send g_wait_fc nt_timer_start 
+send_consecutiveframe     USES ZTai_UDS_Send 
+send_multipleframe        USES remain_buf g_xcf_sn send_firstframe remain_pos 
+                                remain_len 
+network_main              USES network_main clear_network recv_buf recv_len 
+                                N_USData _CALL_STAR08 g_xcf_sn remain_pos remain_buf 
+                                remain_len send_consecutiveframe g_rfc_bs g_xcf_bc 
+                                g_wait_fc nt_timer_start nt_timer_run 
+network_recv_frame        USES g_tatype _Jump_Table_Header_Offset 
+                                network_recv_frame clear_network recv_buf recv_len N_USData 
+                                _CALL_STAR08 recv_singleframe recv_firstframe g_wait_cf 
+                                recv_consecutiveframe nwl_st g_wait_fc recv_flowcontrolframe 
+network_send_udsmsg       USES send_singleframe nwl_st send_multipleframe 
+network_reg_usdata        USES N_USData 
+obd_dtc_ctrl              USES dtc_off 
+obd_dtc_clear             USES obd_dtc_data 
+get_dtc_number_by_status_mask USES obd_dtc_data 
+get_dtc_by_status_mask    USES obd_dtc_data get_dtc_by_status_mask 
+                                obd_dtc_para 
+get_supported_dtc         USES get_supported_dtc obd_dtc_para 
+clear_dtc_by_group        USES _LCMP_RC obd_dtc_para obd_dtc_clear 
+uds_timer_start           USES uds_timer 
+uds_timer_stop            USES uds_timer 
+uds_timer_run             USES uds_timer _LDEC _POP32 
+uds_timer_chk             USES uds_timer 
+uds_negative_rsp          USES uds_timer_start g_tatype network_send_udsmsg 
+uds_positive_rsp          USES uds_timer_start ssp_flg network_send_udsmsg 
+uds_check_len             USES uds_check_len _Jump_Table_Offset 
+                                _Search_Table_8_Offset 
+uds_service_10            USES _Jump_Table_Header_Offset uds_timer_start 
+                                uds_negative_rsp curr_sa uds_session uds_positive_rsp 
+uds_service_11            USES uds_positive_rsp uds_negative_rsp 
+uds_service_27            USES uds_timer_chk uds_negative_rsp req_seed 
+                                uds_service_27 curr_sa rand_u8 org_seed_buf uds_positive_rsp 
+                                uds_security_access uds_fsa_cnt uds_timer_start 
+uds_service_28            USES dis_normal_xmit dis_normal_recv 
+                                uds_positive_rsp uds_negative_rsp 
+uds_service_3E            USES uds_positive_rsp uds_negative_rsp 
+uds_service_85            USES uds_negative_rsp obd_dtc_ctrl uds_positive_rsp 
+uds_service_22            USES uds_service_22 rwdata_list memcpy 
+                                uds_positive_rsp uds_negative_rsp 
+uds_service_2E            USES rwdata_list memcpy eeprom_write uds_service_2E 
+                                uds_positive_rsp uds_negative_rsp 
+uds_service_14            USES _LLSL _POP32 _LOR clear_dtc_by_group 
+                                uds_positive_rsp uds_negative_rsp 
+uds_service_19            USES uds_service_19 _Jump_Table_Offset 
+                                uds_negative_rsp get_dtc_number_by_status_mask host_to_cans 
+                                get_dtc_by_status_mask get_supported_dtc uds_positive_rsp 
+uds_service_2F            USES uds_service_2F ioctrl_list rwdata_list memcpy 
+                                uds_positive_rsp uds_negative_rsp 
+uds_service_31            USES uds_service_31 rtctrl_list 
+                                _Jump_Table_Header_Offset uds_positive_rsp uds_negative_rsp _IMUL_STAR08 
+uds_dataff_indication     USES uds_timer_stop 
+uds_data_indication       USES uds_timer_stop uds_timer_start uds_service_list 
+                                uds_data_indication uds_session g_tatype uds_no_response 
+                                uds_check_len curr_sa ssp_flg _CALL_STAR08 uds_negative_rsp 
+uds_data_confirm          USES uds_timer_start 
+uds_get_frame             USES network_recv_frame 
+uds_main                  USES network_main uds_timer_run uds_session curr_sa 
+                                uds_ioctrl_allstop uds_fsa_cnt 
+uds_init                  USES uds_session uds_load_rwdata 
+                                uds_dataff_indication uds_data_indication uds_data_confirm _COPY 
+                                network_reg_usdata 
+seedTOKey                 USES _LXOR_RC _POP32 _COPY 
+uds_security_access       USES can_to_hostl seedTOKey _LCMP 
+uds_ioctrl_allstop        USES ioctrl_list 
+rand_u8                   USES srand rand _IMODS_STAR08 
+can_to_hostl              USES can_to_hostl _LLSL _POP32 _LOR _COPY 
 _ENTER_BINARY_L           USES _PUSH_ARGS_L 
+_ENTER_BINARY_L_RC        USES _PUSH_ARGS_L 
+_SPLITSIGN                USES _IDIVMOD 
+_LMUL_k_is_k_mul_j        USES _k_is_k_plus_j_l _k_is_k_plus_j_i 
+_ABS_L_HX                 USES _NEG_L_HX 
+_SPLITSIGN_L              USES _ABS_L_HX 
+_LMODS_k_is_k_mod_j       USES _SPLITSIGN_L _LDIVMOD _NEG_L_HX 
+_LDIVS_k_is_k_div_j       USES _SPLITSIGN_L _LDIVMOD _NEG_L_HX 
+_IMODS_STAR08             USES _SPLITSIGN 
+_LDEC                     USES _ENTER_UNARY_L 
+_LADD_RC                  USES _ENTER_BINARY_L_RC _LADD_k_is_k_plus_j 
+_LSUB                     USES _ENTER_BINARY_L _LSUB_k_is_k_minus_j 
 _LOR                      USES _ENTER_BINARY_L _LOR_k_is_k_or_j 
+_LXOR_RC                  USES _ENTER_BINARY_L_RC _LXOR_k_is_k_xor_j 
+_LMUL_RC                  USES _ENTER_BINARY_L_RC _LMUL_k_is_k_mul_j 
+_LDIVS_RC                 USES _ENTER_BINARY_L_RC _LDIVS_k_is_k_div_j 
+_LMODS_RC                 USES _ENTER_BINARY_L_RC _LMODS_k_is_k_mod_j 
 _LLSR                     USES _ENTER_UNARY_L 
 _LLSL                     USES _ENTER_UNARY_L 
+_LCMP                     USES _ENTER_BINARY_L _LCMP_k_rel_j 
+_LCMP_RC                  USES _ENTER_BINARY_L_RC _LCMP_k_rel_j 
+rand                      USES seed _LDIVS_RC _POP32 _LMODS_RC _LMUL_RC _LSUB 
+                                _LCMP_RC _LADD_RC 
+srand                     USES seed 
 ISR_vectors               USES isrDummy isrCAN_Recv SCI2_Recv SCI1_Recv 
                                 Timer1_overflow 
 
@@ -1176,6 +1721,320 @@ DEPENDENCY TREE
  |  | 
  |  +- MCUInit             
  |  |    
+ |  +- uds_init            
+ |  |  | 
+ |  |  +- uds_load_rwdata     
+ |  |  |    
+ |  |  +- uds_dataff_indication
+ |  |  |  | 
+ |  |  |  +- uds_timer_stop      
+ |  |  |       
+ |  |  +- uds_data_indication 
+ |  |  |  | 
+ |  |  |  +- uds_timer_stop       (see above)
+ |  |  |  |  
+ |  |  |  +- uds_timer_start     
+ |  |  |  |    
+ |  |  |  +- uds_service_list    
+ |  |  |  |  | 
+ |  |  |  |  +- uds_service_10      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- _Jump_Table_Header_Offset
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_timer_start      (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp    
+ |  |  |  |  |  |  | 
+ |  |  |  |  |  |  +- uds_timer_start      (see above)
+ |  |  |  |  |  |  |  
+ |  |  |  |  |  |  +- network_send_udsmsg 
+ |  |  |  |  |  |     | 
+ |  |  |  |  |  |     +- send_singleframe    
+ |  |  |  |  |  |     |  | 
+ |  |  |  |  |  |     |  +- ZTai_UDS_Send       
+ |  |  |  |  |  |     |     | 
+ |  |  |  |  |  |     |     +- CANSendMsg          
+ |  |  |  |  |  |     |        | 
+ |  |  |  |  |  |     |        +- _LLSR               
+ |  |  |  |  |  |     |           | 
+ |  |  |  |  |  |     |           +- _ENTER_UNARY_L      
+ |  |  |  |  |  |     |                
+ |  |  |  |  |  |     +- send_multipleframe  
+ |  |  |  |  |  |        | 
+ |  |  |  |  |  |        +- send_firstframe     
+ |  |  |  |  |  |           | 
+ |  |  |  |  |  |           +- ZTai_UDS_Send        (see above)
+ |  |  |  |  |  |           |  
+ |  |  |  |  |  |           +- nt_timer_start      
+ |  |  |  |  |  |                
+ |  |  |  |  |  +- uds_positive_rsp    
+ |  |  |  |  |     | 
+ |  |  |  |  |     +- uds_timer_start      (see above)
+ |  |  |  |  |     |  
+ |  |  |  |  |     +- network_send_udsmsg  (see above)
+ |  |  |  |  |        
+ |  |  |  |  +- uds_service_11      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_27      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- uds_timer_chk       
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- rand_u8             
+ |  |  |  |  |  |  | 
+ |  |  |  |  |  |  +- srand               
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- rand                
+ |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  +- _LDIVS_RC           
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L_RC  
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  +- _PUSH_ARGS_L        
+ |  |  |  |  |  |  |  |  |       
+ |  |  |  |  |  |  |  |  +- _LDIVS_k_is_k_div_j 
+ |  |  |  |  |  |  |  |     | 
+ |  |  |  |  |  |  |  |     +- _SPLITSIGN_L        
+ |  |  |  |  |  |  |  |     |  | 
+ |  |  |  |  |  |  |  |     |  +- _ABS_L_HX           
+ |  |  |  |  |  |  |  |     |     | 
+ |  |  |  |  |  |  |  |     |     +- _NEG_L_HX           
+ |  |  |  |  |  |  |  |     |          
+ |  |  |  |  |  |  |  |     +- _LDIVMOD            
+ |  |  |  |  |  |  |  |     |    
+ |  |  |  |  |  |  |  |     +- _NEG_L_HX            (see above)
+ |  |  |  |  |  |  |  |        
+ |  |  |  |  |  |  |  +- _POP32              
+ |  |  |  |  |  |  |  |    
+ |  |  |  |  |  |  |  +- _LMODS_RC           
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L_RC   (see above)
+ |  |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  |  +- _LMODS_k_is_k_mod_j 
+ |  |  |  |  |  |  |  |     | 
+ |  |  |  |  |  |  |  |     +- _SPLITSIGN_L         (see above)
+ |  |  |  |  |  |  |  |     |  
+ |  |  |  |  |  |  |  |     +- _LDIVMOD             (see above)
+ |  |  |  |  |  |  |  |     |  
+ |  |  |  |  |  |  |  |     +- _NEG_L_HX            (see above)
+ |  |  |  |  |  |  |  |        
+ |  |  |  |  |  |  |  +- _LMUL_RC            
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L_RC   (see above)
+ |  |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  |  +- _LMUL_k_is_k_mul_j  
+ |  |  |  |  |  |  |  |     | 
+ |  |  |  |  |  |  |  |     +- _k_is_k_plus_j_l    
+ |  |  |  |  |  |  |  |     |    
+ |  |  |  |  |  |  |  |     +- _k_is_k_plus_j_i    
+ |  |  |  |  |  |  |  |          
+ |  |  |  |  |  |  |  +- _LSUB               
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L     
+ |  |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  |  +- _PUSH_ARGS_L         (see above)
+ |  |  |  |  |  |  |  |  |     
+ |  |  |  |  |  |  |  |  +- _LSUB_k_is_k_minus_j
+ |  |  |  |  |  |  |  |       
+ |  |  |  |  |  |  |  +- _LCMP_RC            
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L_RC   (see above)
+ |  |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  |  +- _LCMP_k_rel_j       
+ |  |  |  |  |  |  |  |       
+ |  |  |  |  |  |  |  +- _LADD_RC            
+ |  |  |  |  |  |  |     | 
+ |  |  |  |  |  |  |     +- _ENTER_BINARY_L_RC   (see above)
+ |  |  |  |  |  |  |     |  
+ |  |  |  |  |  |  |     +- _LADD_k_is_k_plus_j 
+ |  |  |  |  |  |  |          
+ |  |  |  |  |  |  +- _IMODS_STAR08       
+ |  |  |  |  |  |     | 
+ |  |  |  |  |  |     +- _SPLITSIGN          
+ |  |  |  |  |  |        | 
+ |  |  |  |  |  |        +- _IDIVMOD            
+ |  |  |  |  |  |             
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_security_access 
+ |  |  |  |  |  |  | 
+ |  |  |  |  |  |  +- can_to_hostl        
+ |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  +- _LLSL               
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_UNARY_L       (see above)
+ |  |  |  |  |  |  |  |     
+ |  |  |  |  |  |  |  +- _POP32               (see above)
+ |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  +- _LOR                
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L      (see above)
+ |  |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  |  +- _LOR_k_is_k_or_j    
+ |  |  |  |  |  |  |  |       
+ |  |  |  |  |  |  |  +- _COPY               
+ |  |  |  |  |  |  |       
+ |  |  |  |  |  |  +- seedTOKey           
+ |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  +- _LXOR_RC            
+ |  |  |  |  |  |  |  |  | 
+ |  |  |  |  |  |  |  |  +- _ENTER_BINARY_L_RC   (see above)
+ |  |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  |  +- _LXOR_k_is_k_xor_j  
+ |  |  |  |  |  |  |  |       
+ |  |  |  |  |  |  |  +- _POP32               (see above)
+ |  |  |  |  |  |  |  |  
+ |  |  |  |  |  |  |  +- _COPY                (see above)
+ |  |  |  |  |  |  |     
+ |  |  |  |  |  |  +- _LCMP               
+ |  |  |  |  |  |     | 
+ |  |  |  |  |  |     +- _ENTER_BINARY_L      (see above)
+ |  |  |  |  |  |     |  
+ |  |  |  |  |  |     +- _LCMP_k_rel_j        (see above)
+ |  |  |  |  |  |        
+ |  |  |  |  |  +- uds_timer_start      (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_28      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_3E      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_85      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- obd_dtc_ctrl        
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_22      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- memcpy              
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_2E      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- memcpy               (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- eeprom_write        
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_14      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- _LLSL                (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- _POP32               (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- _LOR                 (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- clear_dtc_by_group  
+ |  |  |  |  |  |  | 
+ |  |  |  |  |  |  +- _LCMP_RC             (see above)
+ |  |  |  |  |  |  |  
+ |  |  |  |  |  |  +- obd_dtc_clear       
+ |  |  |  |  |  |       
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_19      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- _Jump_Table_Offset  
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- get_dtc_number_by_status_mask
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- host_to_cans        
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- get_dtc_by_status_mask
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- get_supported_dtc   
+ |  |  |  |  |  |    
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_2F      
+ |  |  |  |  |  | 
+ |  |  |  |  |  +- ioctrl_list         
+ |  |  |  |  |  |  | 
+ |  |  |  |  |  |  +- ioctrl_init_backlight
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_stop_backlight
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_init_buzzer  
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_stop_buzzer  
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_init_gages   
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_stop_gages   
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_init_display 
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_stop_display 
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_init_indicator
+ |  |  |  |  |  |  |    
+ |  |  |  |  |  |  +- ioctrl_stop_indicator
+ |  |  |  |  |  |       
+ |  |  |  |  |  +- memcpy               (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_positive_rsp     (see above)
+ |  |  |  |  |  |  
+ |  |  |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |  |  |     
+ |  |  |  |  +- uds_service_31      
+ |  |  |  |     | 
+ |  |  |  |     +- rtctrl_list         
+ |  |  |  |     |  | 
+ |  |  |  |     |  +- rtctrl_nothing      
+ |  |  |  |     |       
+ |  |  |  |     +- _Jump_Table_Header_Offset (see above)
+ |  |  |  |     |  
+ |  |  |  |     +- uds_positive_rsp     (see above)
+ |  |  |  |     |  
+ |  |  |  |     +- uds_negative_rsp     (see above)
+ |  |  |  |     |  
+ |  |  |  |     +- _IMUL_STAR08        
+ |  |  |  |          
+ |  |  |  +- uds_no_response     
+ |  |  |  |    
+ |  |  |  +- uds_check_len       
+ |  |  |  |  | 
+ |  |  |  |  +- _Jump_Table_Offset   (see above)
+ |  |  |  |  |  
+ |  |  |  |  +- _Search_Table_8_Offset
+ |  |  |  |       
+ |  |  |  +- _CALL_STAR08        
+ |  |  |  |    
+ |  |  |  +- uds_negative_rsp     (see above)
+ |  |  |     
+ |  |  +- uds_data_confirm    
+ |  |  |  | 
+ |  |  |  +- uds_timer_start      (see above)
+ |  |  |     
+ |  |  +- _COPY                (see above)
+ |  |  |  
+ |  |  +- network_reg_usdata  
+ |  |       
  |  +- CANInit             
  |  |    
  |  +- TIMER1_init         
@@ -1195,25 +2054,61 @@ DEPENDENCY TREE
  +- isrCAN_Recv         
  |  | 
  |  +- CANGetMsg           
+ |  |  | 
+ |  |  +- _ILSL               
+ |  |  |    
+ |  |  +- _ILSR               
+ |  |  |    
+ |  |  +- _LLSL                (see above)
+ |  |  |  
+ |  |  +- _LOR                 (see above)
+ |  |  |  
+ |  |  +- _POP32               (see above)
+ |  |     
+ |  +- uds_get_frame       
  |     | 
- |     +- _ILSL               
- |     |    
- |     +- _ILSR               
- |     |    
- |     +- _LLSL               
- |     |  | 
- |     |  +- _ENTER_UNARY_L      
- |     |       
- |     +- _LOR                
- |     |  | 
- |     |  +- _ENTER_BINARY_L     
- |     |  |  | 
- |     |  |  +- _PUSH_ARGS_L        
- |     |  |       
- |     |  +- _LOR_k_is_k_or_j    
- |     |       
- |     +- _POP32              
- |          
+ |     +- network_recv_frame  
+ |        | 
+ |        +- _Jump_Table_Header_Offset (see above)
+ |        |  
+ |        +- clear_network       
+ |        |  | 
+ |        |  +- nt_timer_stop       
+ |        |       
+ |        +- _CALL_STAR08         (see above)
+ |        |  
+ |        +- recv_singleframe    
+ |        |  | 
+ |        |  +- _CALL_STAR08         (see above)
+ |        |     
+ |        +- recv_firstframe     
+ |        |  | 
+ |        |  +- send_flowcontrol    
+ |        |  |  | 
+ |        |  |  +- ZTai_UDS_Send        (see above)
+ |        |  |     
+ |        |  +- nt_timer_start       (see above)
+ |        |  |  
+ |        |  +- _CALL_STAR08         (see above)
+ |        |     
+ |        +- recv_consecutiveframe
+ |        |  | 
+ |        |  +- nt_timer_chk        
+ |        |  |    
+ |        |  +- _CALL_STAR08         (see above)
+ |        |  |  
+ |        |  +- nt_timer_start       (see above)
+ |        |     
+ |        +- recv_flowcontrolframe
+ |           | 
+ |           +- nt_timer_chk         (see above)
+ |           |  
+ |           +- _CALL_STAR08         (see above)
+ |           |  
+ |           +- nt_timer_start       (see above)
+ |           |  
+ |           +- nt_timer_start_wv   
+ |                
  +- SCI2_Recv           
  |  | 
  |  +- SCIReN              
@@ -1232,11 +2127,37 @@ DEPENDENCY TREE
  |     
  +- Timer1_overflow     
     | 
-    +- CANSendMsg          
+    +- uds_main            
        | 
-       +- _LLSR               
+       +- network_main        
+       |  | 
+       |  +- clear_network        (see above)
+       |  |  
+       |  +- _CALL_STAR08         (see above)
+       |  |  
+       |  +- send_consecutiveframe
+       |  |  | 
+       |  |  +- ZTai_UDS_Send        (see above)
+       |  |     
+       |  +- nt_timer_start       (see above)
+       |  |  
+       |  +- nt_timer_run        
+       |     | 
+       |     +- _LDEC               
+       |     |  | 
+       |     |  +- _ENTER_UNARY_L       (see above)
+       |     |     
+       |     +- _POP32               (see above)
+       |        
+       +- uds_timer_run       
+       |  | 
+       |  +- _LDEC                (see above)
+       |  |  
+       |  +- _POP32               (see above)
+       |     
+       +- uds_ioctrl_allstop  
           | 
-          +- _ENTER_UNARY_L       (see above)
+          +- ioctrl_list          (see above)
              
 *********************************************************************************************
 STATISTIC SECTION
@@ -1244,6 +2165,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 4
-Total size of all blocks to be downloaded: 1480
+Number of blocks to be downloaded: 5
+Total size of all blocks to be downloaded: 9383
 

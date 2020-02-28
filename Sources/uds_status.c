@@ -12,6 +12,7 @@
 *******************************************************************************/
 #include "uds_status.h"
 #include "uds_util.h"
+#include "Type.h"
 
 /*******************************************************************************
     Function  Definition
@@ -26,11 +27,11 @@
  * returns:
  *     the key
  */
-static uint32_t
-seedTOKey( uint32_t seed )
+static uint32
+seedTOKey( uint32 seed )
 {
-	uint8_t i;
-	uint32_t key;
+	uint8 i;
+	uint32 key;
 	key = UNLOCKKEY;
 	if(!(( seed == UNLOCKSEED )
 	||( seed == UNDEFINESEED )))
@@ -59,13 +60,13 @@ seedTOKey( uint32_t seed )
  * @seed   :  original seed
  *
  * returns:
- *     0 - success， -1 - fail
+ *     0 - success锛�-1 - fail
  */
 int
-uds_security_access (uint8_t key_buf[], uint8_t seed_buf[])
+uds_security_access (uint8 key_buf[], uint8 seed_buf[])
 {
-	uint32_t key;
-	uint32_t seed;
+	uint32 key;
+	uint32 seed;
     can_to_hostl (key_buf, &key);
 	can_to_hostl (seed_buf, &seed);
 

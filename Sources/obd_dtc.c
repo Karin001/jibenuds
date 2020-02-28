@@ -84,7 +84,7 @@ obd_dtc_ctrl (bool_t val)
  *     void
  */
 static void
-obd_dtc_clear (uint16_t dtc_n)
+obd_dtc_clear (uint16 dtc_n)
 {
     if (dtc_n >= OBD_DTC_CNT) return;
 #ifdef SNAPSHOT
@@ -114,7 +114,7 @@ obd_dtc_clear (uint16_t dtc_n)
  *     void
  */
 static void
-obd_dtc_start_opcycle (uint16_t dtc_n)
+obd_dtc_start_opcycle (uint16 dtc_n)
 {
     if (dtc_n >= OBD_DTC_CNT) return;
 
@@ -151,7 +151,7 @@ obd_dtc_start_opcycle (uint16_t dtc_n)
  *
  */
 void
-uds_update_obddtc (uint16_t dtc_n, obd_dtc_test_t test_result)
+uds_update_obddtc (uint16 dtc_n, obd_dtc_test_t test_result)
 {
     if (dtc_off == TRUE) return;
 
@@ -219,7 +219,7 @@ uds_update_obddtc (uint16_t dtc_n, obd_dtc_test_t test_result)
 void
 uds_load_obddtc (void)
 {
-    uint16_t dtc_n;
+    uint16 dtc_n;
 
     /* Read dtc data from eeprom */
     //eeprom_read();
@@ -267,12 +267,12 @@ uds_save_obddtc (void)
  * returns:
  *     dtc number
  */
-uint16_t
-get_dtc_number_by_status_mask (uint8_t st_mask)
+uint16
+get_dtc_number_by_status_mask (uint8 st_mask)
 {
-    uint16_t dtc_n;
-    uint8_t dtc_st;
-    uint16_t dtc_num;
+    uint16 dtc_n;
+    uint8 dtc_st;
+    uint16 dtc_num;
 
     dtc_num = 0;
     for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
@@ -294,12 +294,12 @@ get_dtc_number_by_status_mask (uint8_t st_mask)
  * returns:
  *     dtc data len
  */
-uint16_t
-get_dtc_by_status_mask (uint8_t dtc_buf[], uint16_t buf_len, uint8_t st_mask)
+uint16
+get_dtc_by_status_mask (uint8 dtc_buf[], uint16 buf_len, uint8 st_mask)
 {
-    uint16_t dtc_n;
-    uint8_t dtc_st;
-    uint16_t dtc_dlc;
+    uint16 dtc_n;
+    uint8 dtc_st;
+    uint16 dtc_dlc;
 
     dtc_dlc = 0;
     for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
@@ -309,9 +309,9 @@ get_dtc_by_status_mask (uint8_t dtc_buf[], uint16_t buf_len, uint8_t st_mask)
         {
             if ((dtc_dlc + 4) <= buf_len)
             {
-                dtc_buf[dtc_dlc++] = (uint8_t)(obd_dtc_para[dtc_n].dtc_code >> 16);
-                dtc_buf[dtc_dlc++] = (uint8_t)(obd_dtc_para[dtc_n].dtc_code >> 8);
-                dtc_buf[dtc_dlc++] = (uint8_t)(obd_dtc_para[dtc_n].dtc_code >> 0);
+                dtc_buf[dtc_dlc++] = (uint8)(obd_dtc_para[dtc_n].dtc_code >> 16);
+                dtc_buf[dtc_dlc++] = (uint8)(obd_dtc_para[dtc_n].dtc_code >> 8);
+                dtc_buf[dtc_dlc++] = (uint8)(obd_dtc_para[dtc_n].dtc_code >> 0);
                 dtc_buf[dtc_dlc++] = (dtc_st & DTC_AVAILABILITY_STATUS_MASK);
             }
             else
@@ -333,12 +333,12 @@ get_dtc_by_status_mask (uint8_t dtc_buf[], uint16_t buf_len, uint8_t st_mask)
  * returns:
  *     dtc data len
  */
-uint16_t
-get_supported_dtc (uint8_t dtc_buf[], uint16_t buf_len)
+uint16
+get_supported_dtc (uint8 dtc_buf[], uint16 buf_len)
 {
-    uint16_t dtc_n;
-    uint8_t dtc_st;
-    uint16_t dtc_dlc;
+    uint16 dtc_n;
+    uint8 dtc_st;
+    uint16 dtc_dlc;
 
     dtc_dlc = 0;
     for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
@@ -347,9 +347,9 @@ get_supported_dtc (uint8_t dtc_buf[], uint16_t buf_len)
         dtc_st = 0x09;
         if ((dtc_dlc + 4) <= buf_len)
         {
-            dtc_buf[dtc_dlc++] = (uint8_t)(obd_dtc_para[dtc_n].dtc_code >> 16);
-            dtc_buf[dtc_dlc++] = (uint8_t)(obd_dtc_para[dtc_n].dtc_code >> 8);
-            dtc_buf[dtc_dlc++] = (uint8_t)(obd_dtc_para[dtc_n].dtc_code >> 0);
+            dtc_buf[dtc_dlc++] = (uint8)(obd_dtc_para[dtc_n].dtc_code >> 16);
+            dtc_buf[dtc_dlc++] = (uint8)(obd_dtc_para[dtc_n].dtc_code >> 8);
+            dtc_buf[dtc_dlc++] = (uint8)(obd_dtc_para[dtc_n].dtc_code >> 0);
             dtc_buf[dtc_dlc++] = (dtc_st & DTC_AVAILABILITY_STATUS_MASK);
         }
         else
@@ -369,9 +369,9 @@ get_supported_dtc (uint8_t dtc_buf[], uint16_t buf_len)
  *     dtc data len
  */
 void
-clear_dtc_by_group (uint32_t group)
+clear_dtc_by_group (uint32 group)
 {
-    uint16_t dtc_n;
+    uint16 dtc_n;
     switch (group)
     {
     case UDS_DTC_GROUP_EMISSION:
@@ -381,19 +381,19 @@ clear_dtc_by_group (uint32_t group)
                 obd_dtc_clear (dtc_n);
         }
         break;
-    case UDS_DTC_GROUP_NETWORK:
-        for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
-        {
-            if (obd_dtc_para[dtc_n].dtc_code >= DTCG_NETWORK_START && obd_dtc_para[dtc_n].dtc_code <= DTCG_NETWORK_END)
-                obd_dtc_clear (dtc_n);
-        }
-        break;
-    case UDS_DTC_GROUP_ALL:
-        for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
-        {
-            obd_dtc_clear (dtc_n);
-        }
-        break;
+//    case UDS_DTC_GROUP_NETWORK:
+//        for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
+//        {
+//            if (obd_dtc_para[dtc_n].dtc_code >= DTCG_NETWORK_START && obd_dtc_para[dtc_n].dtc_code <= DTCG_NETWORK_END)
+//                obd_dtc_clear (dtc_n);
+//        }
+//        break;
+//    case UDS_DTC_GROUP_ALL:
+//        for (dtc_n = 0; dtc_n < OBD_DTC_CNT; dtc_n++)
+//        {
+//            obd_dtc_clear (dtc_n);
+//        }
+//        break;
     default:
         break;
     }

@@ -11,7 +11,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-//#include <stdint.h>
+#include <Type.h>
 #include "uds_type.h"
 
 /*******************************************************************************
@@ -32,24 +32,24 @@
 
 typedef struct __OBD_DTC_PARA_T__
 {
-    uint32_t     dtc_code;
+    uint32     dtc_code;
 
 }obd_dtc_para_t;
 
 
 typedef union __DTC_STATUS_T__
 {
-    uint8_t all;
+    uint8 all;
     struct
     {
-        uint8_t test_fail       : 1;
-        uint8_t test_fail_toc   : 1;
-        uint8_t pending         : 1;
-        uint8_t confirmed       : 1;
-        uint8_t test_ncmp_slc   : 1;
-        uint8_t test_fail_slc   : 1;
-        uint8_t test_ncmp_toc   : 1;
-        uint8_t wn_indr         : 1;
+        uint8 test_fail       : 1;
+        uint8 test_fail_toc   : 1;
+        uint8 pending         : 1;
+        uint8 confirmed       : 1;
+        uint8 test_ncmp_slc   : 1;
+        uint8 test_fail_slc   : 1;
+        uint8 test_ncmp_toc   : 1;
+        uint8 wn_indr         : 1;
     }bit;
 }dtc_status_t;
 
@@ -69,9 +69,9 @@ typedef struct __OBD_DTC_DATA_T__
 #endif
 
     dtc_status_t dtc_st;
-    uint8_t      fec_cnt;
-    int16_t      fdt_cnt;        /* FaultDetectionCount */
-    uint8_t      agn_cnt;        /* DTCAgingCounter */
+    uint8      fec_cnt;
+    int16      fdt_cnt;        /* FaultDetectionCount */
+    uint8      agn_cnt;        /* DTCAgingCounter */
 }obd_dtc_data_t;
 
 #define FDT_MAX               (127)

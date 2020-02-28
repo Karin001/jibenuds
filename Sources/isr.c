@@ -9,6 +9,7 @@
 //-------------------------------------------------------------------------*
 //头文件
 #include "isr.h"
+#include "uds_service.h"
 //SCI1接收中断函数
 interrupt void SCI1_Recv(void)
 {    
@@ -50,12 +51,9 @@ interrupt void isrCAN_Recv(void)
 {    
     DisableInterrupts();                 //禁止总中断
     CANGetMsg(&g_msgGet);
-    if((g_msgGet.sendID  == 0x1))
+    if((g_msgGet.sendID  == udsPhySa))
       {
-       
-          g_msgSend.IDE = 0;
-          g_msgSend.RTR = 0;
-          g_msgSend.data[0]  = g_msgGet.data[0];
+    	uds_get_frame (0, g_msgGet.data, g_msgGet.dataLen);
      
       }
 
@@ -93,8 +91,7 @@ interrupt void isrDummy(void)
 /////////////////////////////////////////////////////////////////////////////////////////
 interrupt void Timer1_overflow (void)
 {
-
-	CANSendMsg(&g_msgSend);
+  uds_main();	
   TPM1SC &=0x7F;
     
 }   

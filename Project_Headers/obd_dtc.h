@@ -11,7 +11,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-//#include <stdint.h>
+#include <Type.h>
 #include "uds_type.h"
 
 /*******************************************************************************
@@ -104,7 +104,7 @@ obd_dtc_ctrl (bool_t val);
  *
  */
 void
-uds_update_obddtc (uint16_t dtc_n, obd_dtc_test_t test_result);
+uds_update_obddtc (uint16 dtc_n, obd_dtc_test_t test_result);
 /**
  * uds_load_obddtc - load obd dtc data from eeprom to ram
  *

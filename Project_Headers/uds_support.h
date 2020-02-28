@@ -11,7 +11,7 @@
 /*******************************************************************************
     Include Files
 *******************************************************************************/
-//#include <stdint.h>
+#include <Type.h>
 #include "uds_type.h"
 /*******************************************************************************
     Type Definition
@@ -44,9 +44,9 @@ typedef enum __UDS_RWDATA_STORE__
 /* uds read/write data typedef */
 typedef struct __UDS_RWDATA_T__
 {
-    uint16_t did;    /* 0100 - EFFF and F010 - F0FF for vehicleManufacturerSpecific */
-    uint8_t *p_data;
-    uint8_t dlc;
+    uint16 did;    /* 0100 - EFFF and F010 - F0FF for vehicleManufacturerSpecific */
+    uint8 *p_data;
+    uint8 dlc;
     uds_rwdata_rw rw_mode;
     uds_rwdata_store rw_store;
 }uds_rwdata_t;
@@ -54,11 +54,11 @@ typedef struct __UDS_RWDATA_T__
 /* uds io control type */
 typedef struct __UDS_IOCTRL_T__
 {
-    uint16_t did;
-    uint8_t *p_data;
-    uint8_t dlc;
-    uint8_t default_value;
-    uint8_t step;
+    uint16 did;
+    uint8 *p_data;
+    uint8 dlc;
+    uint8 default_value;
+    uint8 step;
     bool_t  enable;
     void (* init_ioctrl) (void);
     void (* stop_ioctrl) (void);
@@ -77,11 +77,11 @@ typedef enum __UDS_ROUTINE_STATUS__
 /* uds routine control */
 typedef struct __UDS_RTCTROL_T__
 {
-    uint16_t rid;
+    uint16 rid;
     uds_routine_status rtst;
-    uint8_t (* init_routine) (void);
-    uint8_t (* run_routine) (void);
-    uint8_t (* stop_routine) (void);
+    uint8 (* init_routine) (void);
+    uint8 (* run_routine) (void);
+    uint8 (* stop_routine) (void);
 }uds_rtctrl_t;
 
 #define RWDATA_CNT  11

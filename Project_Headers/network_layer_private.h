@@ -24,7 +24,7 @@
 #define UDS_VALID_FRAME_LEN     8
 #define UDS_SF_DL_MAX           7
 #define UDS_FF_DL_MIN           8
-#define UDS_FF_DL_MAX           (0xFFF)
+#define UDS_FF_DL_MAX           (0x1FF)
 #else
 #define UDS_VALID_FRAME_LEN     7
 #define UDS_SF_DL_MAX           6

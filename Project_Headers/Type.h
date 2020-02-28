@@ -10,7 +10,7 @@
 	typedef unsigned long int   uint32;   // 32 位无符号数
 	typedef char                int8;     //  8 位有符号数
 	typedef short int           int16;    // 16 位有符号数 
-	typedef int                 int32;    // 32 位有符号数 
+	typedef long int            int32;    // 32 位有符号数 
   //不优化变量类型
 	typedef volatile uint8      vuint8;   //  8 位无符号数 
 	typedef volatile uint16     vuint16;  // 16 位无符号数 

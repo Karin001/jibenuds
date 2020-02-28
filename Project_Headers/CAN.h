@@ -18,7 +18,9 @@
     #define   BRP     8     // 波特率预分频器 (Value between 1 and 64)
     #define   TSEG1   4     // 位时间时间段1 (value between 1 and 16 Tq)
     #define   TSEG2   3     // 位时间时间段2 (value between 1 and 8 Tq)
-
+	// uds 物理地址 
+	#define udsPhyTa 0x22
+	#define udsPhySa 0x11
     //3数据报文结构体类型定义
     typedef struct CanMsg  
     {
@@ -59,4 +61,5 @@
     //说  明: 接收之前先定义一个接收缓冲区，类型为CANMsg                   *
     //---------------------------------------------------------------------*
     uint8 CANGetMsg(CANMsg *reMsgBuf);
+    void ZTai_UDS_Send(uint8 sendBuf[], const int code);
 #endif

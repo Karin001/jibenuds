@@ -1,5 +1,4 @@
 
-
 Sources/main_c.obj: \
 	E:/workspace/dz60/udsdemo_v0.01/Project_Headers/../Sources/main.c \
 	E:/workspace/dz60/udsdemo_v0.01/Project_Headers/Includes.h \

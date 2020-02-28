@@ -52,12 +52,11 @@ interrupt void isrCAN_Recv(void)
     CANGetMsg(&g_msgGet);
     if((g_msgGet.sendID  == 0x1))
       {
-          timer_count = 0;
+       
           g_msgSend.IDE = 0;
           g_msgSend.RTR = 0;
-          g_msgSend.data[0]  = 21;
-          
-          tag = 1;
+          g_msgSend.data[0]  = g_msgGet.data[0];
+     
       }
 
     EnableInterrupts();                  //开放总中断

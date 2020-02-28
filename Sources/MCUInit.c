@@ -48,7 +48,7 @@ void TIMER1_init(void)
 {
 // Timer1 Overflow every 1ms
   TPM1MODH = 0x41;
-  TPM1MODL = 0x1a;
+  TPM1MODL = 0x1B;
   //6e-5 ms /tick
   
   // Enable Interrupt Overflow Timer1 and 

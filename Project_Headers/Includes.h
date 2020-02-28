@@ -11,7 +11,7 @@
 #include "Type.h"             //类型别名定义
 #include "GeneralFun.h"       //通用函数头文件
 #include "MCUInit.h" 
-#include "uds_Hheaders/uds_service.h"
+
 
 
 //1.2 包含面向硬件对象头文件
